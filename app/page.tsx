@@ -245,12 +245,12 @@ export default function Home() {
 
   return (
     <main
-        className="min-h-screen bg-[#0B0F1A] text-white px-4 pt-6"
+        className="h-screen flex flex-col bg-[#0B0F1A] text-white"
         style={{ ["--primary-color" as any]: "#22c55e" }}
       > 
 
       {/* Header + DateScroller Components */}
-      <div className="fixed bg-[#0B0F1A] top-0 left-0 right-0 z-40">
+      <div className="fixed top-0 left-0 right-0 z-40 bg-[#0B0F1A]">
         <Header
           onOpenSettings={() => setSettingsOpen(true)}
         />
@@ -260,6 +260,8 @@ export default function Home() {
           habits={habits}
         />
       </div>
+
+      <div className="h-[160px]" />
 
       {/* HabitCard Component */}
       {/* <DndContext
@@ -275,7 +277,9 @@ export default function Home() {
         </SortableContext>
       </DndContext> */}
 
-      {habits.length === 0 ? (
+
+        <div className="flex-1 overflow-y-auto pt-[100px] px-4">
+          {habits.length === 0 ? (
             <div className="flex flex-col items-center justify-center min-h-[calc(100vh-160px)] text-center px-6">
               <PlusCircle size={42} className="text-green-400" />
 
@@ -288,7 +292,7 @@ export default function Home() {
               </p>
             </div>
           ) : (
-            <div className="mt-40 flex flex-col gap-5">
+            <div className="flex flex-col gap-5 px-4 pb-32">
               {habits.map((habit) => (
                 <HabitCard
                   key={habit.id}
@@ -313,6 +317,8 @@ export default function Home() {
               ))}
             </div>
           )}
+        </div>
+
 
       <FloatingButton
         onClick={() => {
