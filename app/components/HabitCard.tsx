@@ -179,7 +179,7 @@ const style = {
       }}
       {...attributes}
       {...listeners}
-      className="bg-[#121826] rounded-2xl p-4 relative touch-none"
+      className="bg-[#121826] rounded-2xl p-4 relative"
     >
 
       {/* Header */}
