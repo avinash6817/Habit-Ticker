@@ -262,7 +262,7 @@ export default function Home() {
       </div>
 
       {/* HabitCard Component */}
-      <DndContext
+      {/* <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
@@ -271,7 +271,11 @@ export default function Home() {
           items={habits.map((h) => h.id)}
           strategy={verticalListSortingStrategy}
         >
-          {habits.length === 0 ? (
+          
+        </SortableContext>
+      </DndContext> */}
+
+      {habits.length === 0 ? (
             <div className="flex flex-col items-center justify-center min-h-[calc(100vh-160px)] text-center px-6">
               <PlusCircle size={42} className="text-green-400" />
 
@@ -309,8 +313,6 @@ export default function Home() {
               ))}
             </div>
           )}
-        </SortableContext>
-      </DndContext>
 
       <FloatingButton
         onClick={() => {
