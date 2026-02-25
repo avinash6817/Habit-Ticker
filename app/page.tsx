@@ -273,7 +273,7 @@ export default function Home() {
           strategy={verticalListSortingStrategy}
         >
           {habits.length === 0 ? (
-            <div className="flex flex-col items-center justify-center min-h-[calc(100vh-160px)] text-center px-6">
+            <div className="flex flex-col items-center justify-center min-h-[calc(100vh)] text-center px-6">
               <PlusCircle size={42} className="text-green-400" />
 
               <h3 className="text-lg font-semibold text-white mb-2">
@@ -285,7 +285,7 @@ export default function Home() {
               </p>
             </div>
           ) : (
-            <div className="flex flex-col gap-5 px-4 pt-40">
+            <div className="flex flex-col gap-5 min-h-[calc(100vh)] px-2 pt-40">
               {habits.map((habit) => (
                 <HabitCard
                   key={habit.id}

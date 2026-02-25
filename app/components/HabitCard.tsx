@@ -185,26 +185,16 @@ const style = {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
 
-        <div className="flex items-start gap-3">
+        <div className="flex items-center gap-3">
 
           {/* Icon */}
           <div className={`${habit.color} text-black p-2 rounded-xl`}>
             <IconComponent size={18} />
           </div>
 
-          <div>
             <h2 className="text-base font-semibold">
               {habit.name}
             </h2>
-
-            <p className="text-sm text-gray-400">
-              🔥 Current: {currentStreak}
-            </p>
-
-            <p className="text-sm text-gray-400">
-              🏆 Best: {highestStreak}
-            </p>
-          </div>
         </div>
 
         {/* Right Controls */}
@@ -291,7 +281,7 @@ const style = {
       </div>
 
       {/* Heatmap */}
-      <div className="grid grid-cols-10 gap-2">
+      <div className="grid grid-cols-20 gap-2">
         {last100Days.map((day) => (
           <div
             key={day}
@@ -308,7 +298,17 @@ const style = {
       </div>
 
       {/* Created Date Pill */}
-      <div className="flex justify-end mt-3">
+      <div className="flex justify-between mt-3">
+          <div className="flex gap-2">
+            <p className="text-sm text-gray-400">
+                🔥 Current : {currentStreak}
+              </p>
+
+              <p className="text-sm text-gray-400">
+                🏆 Best : {highestStreak}
+              </p>
+
+          </div>
         <span
           className="text-[8px] px-3 py-1 rounded-full font-medium"
           style={{
