@@ -29,7 +29,7 @@ export default function DateScroller({
     if (todayRef.current) {
       todayRef.current.scrollIntoView({
         behavior: "smooth",
-        inline: "end",
+        inline: "center",
         block: "nearest",
       })
     }
@@ -72,13 +72,6 @@ export default function DateScroller({
   return (
     <div className="flex gap-3 overflow-x-auto p-3 no-scrollbar">
       {days.map((day) => {
-
-        // const totalHabits = habits.length
-
-        // const completedCount = habits.filter((habit) =>
-        //   habit.completions.includes(day)
-        // ).length
-
         
       // Only habits that existed on this day (string comparison)
 
@@ -107,7 +100,6 @@ export default function DateScroller({
                       setSelectedDate(day)
                     }
                 }}
-                tabIndex={0}
                 className={`
                     relative
                     w-13 h-13

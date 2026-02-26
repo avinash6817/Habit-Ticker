@@ -1,7 +1,7 @@
 
 "use client"
 
-import { Check, MoreVertical, Pencil, Trash2, Archive } from "lucide-react"
+import { Check, MoreVertical, Pencil, Trash2, Archive,Trophy, Sparkles } from "lucide-react"
 import { useState } from "react"
 import { habitColorHexMap } from "../utilities/theme"
 
@@ -297,16 +297,23 @@ const style = {
         ))}
       </div>
 
-      {/* Created Date Pill */}
+      {/* Streak + Date Pill */}
       <div className="flex justify-between mt-3">
-          <div className="flex gap-2">
-            <p className="text-sm text-gray-400">
-                🔥 Current : {currentStreak}
-              </p>
+          <div className="flex gap-3">
 
-              <p className="text-sm text-gray-400">
-                🏆 Best : {highestStreak}
-              </p>
+            <div className="flex gap-1 items-center">
+                <Sparkles style={{color:hex}} size={14} /> 
+                <p className="text-[12px] text-gray-400 font-semibold">
+                  CURRENT - {currentStreak}
+                </p>
+            </div>
+
+              <div className="flex gap-1 items-center">
+                <Trophy style={{color:hex}} size={14} /> 
+                <p className="text-[12px] text-gray-400 font-semibold">
+                  BEST - {highestStreak}
+                </p>
+              </div>
 
           </div>
         <span

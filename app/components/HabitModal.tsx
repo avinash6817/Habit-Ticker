@@ -29,7 +29,7 @@ export default function HabitModal({
 }: HabitModalProps) {
 
   const [selectedIcon, setSelectedIcon] = useState("flame")
-  const [selectedColor, setSelectedColor] = useState("bg-green-300")
+  const [selectedColor, setSelectedColor] = useState("bg-emerald-200")
   const [habitName, setHabitName] = useState("")
   const [isSaving, setIsSaving] = useState(false)
 
@@ -47,7 +47,7 @@ export default function HabitModal({
     if (mode === "create") {
       setHabitName("")
       setSelectedIcon("flame")
-      setSelectedColor("bg-green-300")
+      setSelectedColor("bg-emerald-200")
     }
   }, [mode, initialHabit])
 
@@ -219,17 +219,17 @@ export default function HabitModal({
                 Choose Color
               </label>
 
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-3 p-1 overflow-x-auto no-scrollbar">
                 {habitColors.map((color) => (
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
                     className={`
-                      w-8 h-8 rounded-full transition
+                      w-8 h-8 rounded-full transition flex-shrink-0
                       ${color}
                       ${
                         selectedColor === color
-                          ? "ring-2 ring-white scale-110"
+                          ? "ring-2 ring-white scale-105"
                           : ""
                       }
                     `}

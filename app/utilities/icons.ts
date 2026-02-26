@@ -7,7 +7,21 @@ import {
   Laptop,
   Activity,
   Target,
-  Volleyball
+  Volleyball,
+  Heart,
+  Moon,
+  Sun,
+  Coffee,
+  Apple,
+  Music,
+  PenLine,
+  Clock,
+  CheckCircle,
+  Droplets,
+  Users,
+  Wallet,
+  GraduationCap,
+  Calendar,
 } from "lucide-react"
 
 export const IconsList = [
@@ -19,7 +33,21 @@ export const IconsList = [
   { name: "laptop", icon: Laptop },
   { name: "activity", icon: Activity },
   { name: "target", icon: Target },
-  { name: "volleyball",icon:Volleyball}
+  { name: "volleyball", icon: Volleyball },
+  { name: "heart", icon: Heart },
+  { name: "moon", icon: Moon },
+  { name: "sun", icon: Sun },
+  { name: "coffee", icon: Coffee },
+  { name: "apple", icon: Apple },
+  { name: "music", icon: Music },
+  { name: "pen", icon: PenLine },
+  { name: "clock", icon: Clock },
+  { name: "check", icon: CheckCircle },
+  { name: "water", icon: Droplets },
+  { name: "users", icon: Users },
+  { name: "wallet", icon: Wallet },
+  { name: "study", icon: GraduationCap },
+  { name: "calendar", icon: Calendar },
 ]
 
 export const IconsMapList = {
@@ -31,5 +59,19 @@ export const IconsMapList = {
   laptop: Laptop,
   activity: Activity,
   target: Target,
-  volleyball: Volleyball
+  volleyball: Volleyball,
+  heart: Heart,
+  moon: Moon,
+  sun: Sun,
+  coffee: Coffee,
+  apple: Apple,
+  music: Music,
+  pen: PenLine,
+  clock: Clock,
+  check: CheckCircle,
+  water: Droplets,
+  users: Users,
+  wallet: Wallet,
+  study: GraduationCap,
+  calendar: Calendar,
 }

@@ -34,7 +34,7 @@ export default function Header({ onOpenSettings }: HeaderProps) {
           onClick={onOpenSettings}
           className="p-2 rounded-full hover:bg-white/10 transition"
         >
-        <Settings size={20} />
+        <Settings size={22} />
       </button>
     </header>
   )
