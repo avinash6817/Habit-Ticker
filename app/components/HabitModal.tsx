@@ -32,6 +32,7 @@ export default function HabitModal({
   const [selectedColor, setSelectedColor] = useState("bg-emerald-200")
   const [habitName, setHabitName] = useState("")
   const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState("")
 
 
   // Prefill data when editing
@@ -52,7 +53,13 @@ export default function HabitModal({
   }, [mode, initialHabit])
 
   const handleSave = async () => {
-    if (!habitName.trim()) return
+    // if (!habitName.trim()) return
+
+    if (!habitName.trim()) {
+      setError("Habit name is required")
+      return
+    }
+
     if (isSaving) return
 
     try {
@@ -181,10 +188,20 @@ export default function HabitModal({
               <input
                 type="text"
                 value={habitName}
-                onChange={(e) => setHabitName(e.target.value)}
+                onChange={
+                  (e) => { 
+                      setHabitName(e.target.value)
+                      if (error) setError("")
+                  }}
                 placeholder="What habit do you want to build?"
-                className="w-full bg-[#1F2937] text-white px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-green-500"
+                className={`
+                  w-full bg-[#1F2937] text-white px-4 py-3 rounded-xl outline-none
+                  ${error ? "ring-2 ring-red-400" : "focus:ring-2 focus:ring-green-400"}
+                `}
               />
+              {error && (
+                <p className="text-red-400 text-sm">{error}</p>
+              )}
             </div>
 
             {/* Icon Picker */}
