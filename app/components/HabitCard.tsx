@@ -171,16 +171,16 @@ const style = {
 
   return (
     <div
-      ref={setNodeRef}
-      style={{
-        ...style,
-        border: `2px solid ${hex}80`,
-        opacity: isDragging ? 0.6 : 1,
-      }}
-      {...attributes}
-      {...listeners}
-      className="bg-[#121826] rounded-2xl p-4 relative"
-    >
+        ref={setNodeRef}
+        style={{
+          ...style,
+          border: `2px solid ${hex}80`,
+          opacity: isDragging ? 0.6 : 1,
+        }}
+        {...attributes}
+        {...listeners}
+        className="bg-[#121826] rounded-2xl p-4 relative"
+      >
 
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
