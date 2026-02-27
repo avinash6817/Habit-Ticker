@@ -1,6 +1,7 @@
 import type { Metadata,Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import ServiceWorkerRegister from "./components/ServiceWorkerRegister"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Habit Ticker",
-  description: "Track your habits daily",
+  description: "Track your daily habits and build streaks.",
 };
 
 export const viewport: Viewport = {
@@ -32,6 +33,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
