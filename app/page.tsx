@@ -78,8 +78,12 @@ export default function Home() {
           setHabits(formattedActive)
           setArchivedHabits(formattedArchived)
 
-        } catch (error) {
+        } 
+        catch (error) {
           console.error("Failed to load habits:", error)
+        }
+        finally{
+          setLoading(false)
         }
       }
 
@@ -103,6 +107,7 @@ export default function Home() {
   const [deletingHabit, setDeletingHabit] = useState<Habit | null>(null)
 
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
 
 
   const [archiveOpen, setArchiveOpen] = useState(false)
@@ -245,21 +250,21 @@ export default function Home() {
 
   return (
     <main
-        className="min-h-screen bg-[#0B0F1A] text-white px-4 pt-6"
+        className="min-h-screen bg-[#0B0F1A] text-white px-4 pt-6 max-w-[1024px] mx-auto"
         style={{ ["--primary-color" as any]: "#22c55e" }}
       > 
 
-      {/* Header + DateScroller Components */}
-      <div className="fixed top-0 left-0 right-0 z-40 bg-[#0B0F1A]">
-        <Header
-          onOpenSettings={() => setSettingsOpen(true)}
-        />
-        <DateScroller
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
-          habits={habits}
-        />
-      </div>
+        {/* Header + DateScroller Components */}
+        <div className="fixed top-0 left-0 right-0 z-40 bg-[#0B0F1A] max-w-[1024px] mx-auto">
+          <Header
+            onOpenSettings={() => setSettingsOpen(true)}
+          />
+          <DateScroller
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            habits={habits}
+          />
+        </div>
 
 
       {/* HabitCard Component */}
@@ -272,7 +277,16 @@ export default function Home() {
           items={habits.map((h) => h.id)}
           strategy={verticalListSortingStrategy}
         >
-          {habits.length === 0 ? (
+          {loading ? (
+            <div className="flex flex-col gap-5 px-2 pt-40">
+              {[...Array(4)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-28 rounded-2xl bg-[#1F2937] animate-pulse"
+                />
+              ))}
+            </div>
+          ) : habits.length === 0 ? (
             <div className="flex flex-col items-center justify-center min-h-[calc(100vh)] text-center px-6">
               <PlusCircle size={42} className="text-green-400" />
 

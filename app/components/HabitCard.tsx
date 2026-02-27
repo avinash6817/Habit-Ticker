@@ -281,7 +281,7 @@ const style = {
       </div>
 
       {/* Heatmap */}
-      <div className="grid grid-cols-15 gap-2">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(16px,1fr))] gap-2">
         {last100Days.map((day) => (
           <div
             key={day}
