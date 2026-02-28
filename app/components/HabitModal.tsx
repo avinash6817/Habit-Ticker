@@ -3,7 +3,7 @@
 "use client"
 
 import { X } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { habitColors, habitColorTextMap } from "../utilities/theme"
 import { IconsList, IconsMapList } from "../utilities/icons"
@@ -33,27 +33,62 @@ export default function HabitModal({
   const [habitName, setHabitName] = useState("")
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState("")
+  const inputRef = useRef<HTMLInputElement | null>(null)
 
 
-  // Prefill data when editing
+  const resetModal = () => {
+    setHabitName("")
+    setSelectedIcon("flame")
+    setSelectedColor("bg-emerald-200")
+    setError("")
+  }
+
   useEffect(() => {
+    setError("")
+
     if (mode === "edit" && initialHabit) {
       setHabitName(initialHabit.name)
       setSelectedColor(initialHabit.color)
-
-      // icon is now already a string
       setSelectedIcon(initialHabit.icon)
     }
 
     if (mode === "create") {
-      setHabitName("")
-      setSelectedIcon("flame")
-      setSelectedColor("bg-emerald-200")
+      resetModal()
     }
   }, [mode, initialHabit])
 
+  useEffect(() => {
+    if (!isOpen) {
+      setError("")
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        inputRef.current?.focus()
+      }, 100) // small delay for animation
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = "auto"
+    }
+
+    return () => {
+      document.body.style.overflow = "auto"
+    }
+  }, [isOpen])
+
+  const handleClose = () => {
+    resetModal()
+    onClose()
+  }
+
   const handleSave = async () => {
-    // if (!habitName.trim()) return
 
     if (!habitName.trim()) {
       setError("Habit name is required")
@@ -65,8 +100,9 @@ export default function HabitModal({
     try {
       setIsSaving(true)
 
-      // ✅ EDIT MODE
+      // Edit Mode
       if (mode === "edit" && initialHabit && onUpdateHabit) {
+
         const updatedHabitFromDB = await updateHabitAction(
           initialHabit.id,
           {
@@ -76,7 +112,6 @@ export default function HabitModal({
           }
         )
 
-        // 🔥 FORMAT createdAt just like create mode
         const dateObj = new Date(updatedHabitFromDB.createdAt)
         const year = dateObj.getFullYear()
         const month = String(dateObj.getMonth() + 1).padStart(2, "0")
@@ -86,23 +121,22 @@ export default function HabitModal({
 
         const updatedHabit = {
           ...updatedHabitFromDB,
-          createdAt: formattedDate, // ✅ FIXED HERE
+          createdAt: formattedDate,
           completions: initialHabit.completions ?? [],
         }
 
         onUpdateHabit(updatedHabit)
-        onClose()
+        handleClose()
         return
       }
 
-      // ✅ CREATE MODE
+      // Create Mode
       const createdHabit = await createHabitAction({
         name: habitName,
         icon: selectedIcon,
         color: selectedColor,
       })
 
-      // 🔥 Format DB createdAt into YYYY-MM-DD
       const dateObj = new Date(createdHabit.createdAt)
       const year = dateObj.getFullYear()
       const month = String(dateObj.getMonth() + 1).padStart(2, "0")
@@ -112,15 +146,11 @@ export default function HabitModal({
 
       onAddHabit({
         ...createdHabit,
-        createdAt: formattedDate, // ✅ formatted for your UI
+        createdAt: formattedDate,
         completions: [],
       })
 
-      setHabitName("")
-      setSelectedIcon("flame")
-      setSelectedColor("bg-green-300")
-
-      onClose()
+      handleClose()
 
     } 
     catch (error) {
@@ -158,7 +188,7 @@ export default function HabitModal({
                 {mode === "edit" ? "Edit Habit" : "New Habit"}
               </h2>
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 className="p-2 rounded-full hover:bg-white/10 transition text-xl"
               >
                 <X size={20} strokeWidth={3} />
@@ -172,9 +202,7 @@ export default function HabitModal({
               >
                 {(() => {
                   const PreviewIcon =
-                    IconsMapList[
-                      selectedIcon as keyof typeof IconsMapList
-                    ]
+                    IconsMapList[selectedIcon as keyof typeof IconsMapList]
                   return <PreviewIcon size={28} strokeWidth={2} />
                 })()}
               </div>
@@ -186,13 +214,13 @@ export default function HabitModal({
                 Habit Name *
               </label>
               <input
+                ref={inputRef}
                 type="text"
                 value={habitName}
-                onChange={
-                  (e) => { 
-                      setHabitName(e.target.value)
-                      if (error) setError("")
-                  }}
+                onChange={(e) => {
+                  setHabitName(e.target.value)
+                  if (error) setError("")
+                }}
                 placeholder="What habit do you want to build?"
                 className={`
                   w-full bg-[#1F2937] text-white px-4 py-3 rounded-xl outline-none
@@ -258,6 +286,7 @@ export default function HabitModal({
             {/* Save Button */}
             <button
               onClick={handleSave}
+              disabled={isSaving}
               className={`
                 w-full 
                 ${selectedColor}
@@ -267,6 +296,7 @@ export default function HabitModal({
                 font-semibold 
                 active:scale-95 
                 transition
+                ${isSaving ? "opacity-60 cursor-not-allowed" : ""}
               `}
             >
               {mode === "edit" ? "Update Habit" : "Save Habit"}
