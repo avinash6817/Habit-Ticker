@@ -11,7 +11,7 @@ export default function FloatingButton({ onClick }: Props) {
                 right-6 
                 w-16 
                 h-16 
-                z-40
+                z-50
                 rounded-3xl 
                 bg-green-500 
                 text-black 

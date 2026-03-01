@@ -2,6 +2,7 @@
 
 import { ArrowLeft, ChevronRight, Archive } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import Footer from "./Footer"
 
 type SettingsScreenProps = {
   isOpen: boolean
@@ -84,6 +85,10 @@ export default function SettingsScreen({
                 </div>
 
             </div>
+
+            {/* Footer */}
+            <Footer/>
+            
         </motion.div>
       )}
     </AnimatePresence>

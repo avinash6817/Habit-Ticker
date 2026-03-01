@@ -16,7 +16,9 @@ import HabitCard from "./components/HabitCard"
 import SettingsScreen from "./components/SettingsScreen"
 import ArchiveScreen from "./components/ArchiveScreen"
 import ConfirmActionModal from "./components/ConfirmActionModal"
-import Footer from "./components/Footer"
+import TaskScreen from "./components/TaskScreen"
+import BottomSwitcher from "./components/BottomSwitcher"
+import ScheduleScreen from "./components/ScheduleScreen"
 
 
 // Importing Server Functions
@@ -109,11 +111,13 @@ export default function Home() {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [loading, setLoading] = useState(true)
 
-
   const [archiveOpen, setArchiveOpen] = useState(false)
   const [archivedHabits, setArchivedHabits] = useState<Habit[]>([])
   const [deletingArchivedHabit, setDeletingArchivedHabit] = useState<Habit | null>(null)
   const [restoringHabit, setRestoringHabit] = useState<Habit | null>(null)
+
+  const [activeScreen, setActiveScreen] = useState<"habits" | "tasks">("habits")
+
   
 
   const handleAddHabit = (habit: Habit) => {
@@ -250,91 +254,99 @@ export default function Home() {
 
   return (
     <main
-        className="min-h-screen bg-[#0B0F1A] text-white px-4 pt-6 max-w-[1024px] mx-auto"
+        className="min-h-screen bg-[#0B0F1A] text-white px-4 max-w-[1024px] mx-auto"
         style={{ ["--primary-color" as any]: "#22c55e" }}
       > 
 
         {/* Header + DateScroller Components */}
-        <div className="fixed top-0 left-0 right-0 z-40 bg-[#0B0F1A] max-w-[1024px] mx-auto">
+        <div className="fixed top-0 left-0 right-0 z-40 bg-[#0B0F1A] max-w-[1024px] mx-auto px-4">
           <Header
             onOpenSettings={() => setSettingsOpen(true)}
           />
-          <DateScroller
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            habits={habits}
-          />
+          {activeScreen === "habits" && (
+            <DateScroller
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              habits={habits}
+            />
+          )}
         </div>
 
 
       {/* HabitCard Component */}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-        >
-        <SortableContext
-          items={habits.map((h) => h.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          {loading ? (
-            <div className="flex flex-col gap-5 px-2 pt-40">
-              {[...Array(4)].map((_, i) => (
-                <div
-                  key={i}
-                  className="h-28 rounded-2xl bg-[#1F2937] animate-pulse"
-                />
-              ))}
-            </div>
-          ) : habits.length === 0 ? (
-            <div className="flex flex-col items-center justify-center min-h-[calc(100vh)] text-center px-6">
-              <PlusCircle size={42} className="text-green-400" />
+      {activeScreen === "habits" && (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          >
+          <SortableContext
+            items={habits.map((h) => h.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {loading ? (
+              <div className="flex flex-col gap-5 px-2 pt-40">
+                {[...Array(4)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-28 rounded-2xl bg-[#1F2937] animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : habits.length === 0 ? (
+              <div className="flex flex-col items-center justify-center min-h-[calc(100vh)] text-center px-6">
+                <PlusCircle size={42} className="text-green-400" />
 
-              <h3 className="text-lg font-semibold text-white mb-2">
-                No habits yet
-              </h3>
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  No habits yet
+                </h3>
 
-              <p className="text-sm text-gray-400">
-                Tap the + button to add your first habit
-              </p>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-5 min-h-[calc(100vh)] px-2 pt-40">
-              {habits.map((habit) => (
-                <HabitCard
-                  key={habit.id}
-                  habit={habit}
-                  selectedDate={selectedDate}
-                  setHabit={(updatedHabit: Habit) => {
-                    setHabits((prev) =>
-                      prev.map((h) =>
-                        h.id === updatedHabit.id ? updatedHabit : h
+                <p className="text-sm text-gray-400">
+                  Tap the + button to add your first habit
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-5 min-h-[calc(100vh)] px-2 pt-40 pb-30">
+                {habits.map((habit) => (
+                  <HabitCard
+                    key={habit.id}
+                    habit={habit}
+                    selectedDate={selectedDate}
+                    setHabit={(updatedHabit: Habit) => {
+                      setHabits((prev) =>
+                        prev.map((h) =>
+                          h.id === updatedHabit.id ? updatedHabit : h
+                        )
                       )
-                    )
-                  }}
-                  onEdit={() => {
-                    setEditingHabit(habit)
-                    setOpen(true)
-                  }}
-                  onDelete={() => {
-                    setDeletingHabit(habit)
-                  }}
-                  onArchive={() => handleArchiveHabit(habit)}
-                />
-              ))}
-            </div>
-          )}
-          
-        </SortableContext>
-      </DndContext>
+                    }}
+                    onEdit={() => {
+                      setEditingHabit(habit)
+                      setOpen(true)
+                    }}
+                    onDelete={() => {
+                      setDeletingHabit(habit)
+                    }}
+                    onArchive={() => handleArchiveHabit(habit)}
+                  />
+                ))}
+              </div>
+            )}
+            
+          </SortableContext>
+        </DndContext>
+      )}
 
+      {/* Schedule Screen */}
+      {activeScreen === "tasks" && <ScheduleScreen />}
 
-      <FloatingButton
-        onClick={() => {
-          setEditingHabit(null) // ensure create mode
-          setOpen(true)
-        }}
-      />
+      {activeScreen === "habits" && (
+        <FloatingButton
+          onClick={() => {
+            setEditingHabit(null)
+            setOpen(true)
+          }}
+        />
+      )}
 
       {/* HabitModal Component */}
       <HabitModal
@@ -449,8 +461,10 @@ export default function Home() {
         icon={<AlertTriangle size={22} />}
       />
 
-
-      <Footer />
+      <BottomSwitcher
+        activeScreen={activeScreen}
+        setActiveScreen={setActiveScreen}
+      />  
 
     </main>
   )

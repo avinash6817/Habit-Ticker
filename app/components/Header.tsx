@@ -24,7 +24,7 @@ export default function Header({ onOpenSettings }: HeaderProps) {
   }
 
   return (
-    <header className="px-6 py-4 flex items-center justify-between">
+    <header className="py-4 flex items-center justify-between">
       <h1 className="text-lg font-semibold">
         Today, {day}
         {getOrdinal(day)} {month}, {weekday}

@@ -74,7 +74,6 @@ export default function DateScroller({
       {days.map((day) => {
         
       // Only habits that existed on this day (string comparison)
-
         const validHabits = habits.filter(
           (habit) => habit.createdAt <= day
         )
@@ -129,7 +128,7 @@ export default function DateScroller({
                 />
 
                 {/* Day Number */}
-                <span className="relative z-10 text-sm text-white">
+                <span className="relative z-10 text-sm text-white font-semibold">
                     {new Date(day).getDate()}
                 </span>
             </div>
