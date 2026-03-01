@@ -18,6 +18,25 @@ export default function ScheduleScreen() {
     setTasks(prev => [...prev, newTask])
   }
 
+  // ✅ Sort tasks by due date first (you already had this logic)
+  const sortedTasks = [...tasks].sort(
+    (a, b) =>
+      new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+  )
+
+// ✅ Group tasks by day
+  const groupedTasks = sortedTasks.reduce((acc: any, task) => {
+    const dateKey = new Date(task.dueDate).toDateString()
+
+    if (!acc[dateKey]) {
+      acc[dateKey] = []
+    }
+
+    acc[dateKey].push(task)
+
+    return acc
+  }, {})
+
   return (
     <div className="min-h-screen flex flex-col">
 
@@ -57,13 +76,37 @@ export default function ScheduleScreen() {
             <div className="absolute left-6 -translate-x-1/2 top-0 bottom-0 w-[2px] bg-gray-700" />
 
             <div className="flex flex-col gap-5">
-              {[...tasks]
-                .sort((a, b) =>
-                  new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-                )
-                .map(task => (
-                  <ScheduleTaskCard key={task.id} task={task} />
+              
+              {Object.entries(groupedTasks).map(([date, tasksForDate]: any) => (
+                <div key={date} className="flex flex-col">
+
+                  {tasksForDate.map((task: any, index: number) => (
+                    <div key={task.id} className="relative">
+
+                      {/* Nested connector (only for second+ tasks) */}
+                      {index > 0 && (
+                        <div
+                          className="
+                            absolute
+                            left-[70px]
+                            -top-5
+                            w-[2px]
+                            h-10
+                            bg-gray-700
+                          "
+                        />
+                      )}
+
+                      <div className={index > 0 ? "ml-12 mt-4" : ""}>
+                        <ScheduleTaskCard task={task} />
+                      </div>
+
+                    </div>
+                  ))}
+
+                </div>
               ))}
+
             </div>
 
           </div>
