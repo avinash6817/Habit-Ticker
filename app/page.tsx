@@ -16,7 +16,6 @@ import HabitCard from "./components/HabitCard"
 import SettingsScreen from "./components/SettingsScreen"
 import ArchiveScreen from "./components/ArchiveScreen"
 import ConfirmActionModal from "./components/ConfirmActionModal"
-import TaskScreen from "./components/TaskScreen"
 import BottomSwitcher from "./components/BottomSwitcher"
 import ScheduleScreen from "./components/ScheduleScreen"
 
