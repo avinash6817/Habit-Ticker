@@ -13,7 +13,7 @@ export default function BottomSwitcher({
   setActiveScreen,
 }: BottomSwitcherProps) {
   return (
-    <div className="fixed bottom-6 left-0 right-0 flex justify-center z-40">
+    <div className="fixed bottom-6 left-0 right-0 flex justify-center z-30">
       <div className="relative inline-flex bg-[#111827]/90 backdrop-blur-md rounded-full p-1 border border-gray-700 shadow-lg">
         
         {/* Animated Glow Background */}

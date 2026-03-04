@@ -11,6 +11,8 @@ interface TaskCreateModalProps {
   onClose: () => void
   defaultDate: Date
   onCreate: (task: any) => void
+  onUpdate?: (task: any) => void      // ✅ NEW
+  editingTask?: any | null     
 }
 
 export default function TaskCreateModal({
@@ -18,6 +20,8 @@ export default function TaskCreateModal({
   onClose,
   defaultDate,
   onCreate,
+  onUpdate,
+  editingTask,
 }: TaskCreateModalProps) {
 
   const today = new Date()
@@ -53,25 +57,49 @@ export default function TaskCreateModal({
     }
   }, [isOpen, defaultDate])
 
+
+  useEffect(() => {
+    if (editingTask && isOpen) {
+      setTitle(editingTask.title)
+      setDescription(editingTask.description || "")
+      setDueDate(new Date(editingTask.dueDate))
+      setPriority(editingTask.priority)
+      setCategory(editingTask.category)
+      setCompleted(editingTask.completed)
+      setReminderTime(editingTask.reminderTime)
+    }
+  }, [editingTask, isOpen])
+
   const formatDate = (date: Date) =>
     date.toLocaleDateString("en-IN", {
       weekday: "short",
       day: "numeric",
       month: "short",
       year: "numeric",
-    })
+  })
 
-  /* Reset dueDate when closing */
+  const resetForm = () => {
+    setTitle("")
+    setDescription("")
+    setDueDate(defaultDate || new Date())
+    setPriority("medium")
+    setCategory("personal")
+    setCompleted(false)
+    setSelectedHour(9)
+    setSelectedMinute(0)
+    setPeriod("AM")
+  }
+
   const handleClose = () => {
-    setDueDate(today)
+    resetForm()
     onClose()
   }
 
   const handleSubmit = () => {
     if (!title.trim()) return
 
-    const newTask = {
-      id: Date.now(),
+    const taskData = {
+      id: editingTask ? editingTask.id : Date.now(),
       title,
       description,
       dueDate,
@@ -79,10 +107,15 @@ export default function TaskCreateModal({
       priority,
       category,
       completed,
-      createdAt: new Date(),
+      createdAt: editingTask ? editingTask.createdAt : new Date(),
     }
 
-    onCreate(newTask)
+    if (editingTask && onUpdate) {
+      onUpdate(taskData)
+    } else {
+      onCreate(taskData)
+    }
+
     handleClose()
     setTitle("")
     setDescription("")
@@ -108,7 +141,7 @@ export default function TaskCreateModal({
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-white font-semibold text-lg">
-            Create Task
+            {editingTask ? "Edit Task" : "Create Task"}
           </h3>
           <button onClick={handleClose}>
             <X className="text-gray-400" />
@@ -246,7 +279,7 @@ export default function TaskCreateModal({
             onClick={handleSubmit}
             className="bg-green-500 text-black py-4 rounded-xl font-medium shadow-[0_0_20px_rgba(34,197,94,0.7)] hover:scale-105 transition"
           >
-            Create Task
+            {editingTask ? "Update Task" : "Create Task"}
           </button>
         </div>
       </div>

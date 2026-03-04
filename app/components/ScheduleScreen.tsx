@@ -7,15 +7,54 @@ import { ClipboardList } from "lucide-react"
 import TaskHeader from "./TaskHeader"
 import TaskCreateModal from "./TaskCreateModal"
 import ScheduleTaskCard from "./ScheduleTaskCard"
+import ConfirmActionModal from "./ConfirmActionModal"
+import { Task } from "../types/task"
 
 export default function ScheduleScreen() {
 
-  const [tasks, setTasks] = useState<any[]>([])
+  const [tasks, setTasks] = useState<Task[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState(new Date())
 
-  const handleCreateTask = (newTask: any) => {
+  const [editingTask, setEditingTask] = useState<Task | null>(null)
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+
+  const handleCreateTask = (newTask: Task) => {
     setTasks(prev => [...prev, newTask])
+  }
+
+  const handleUpdateTask = (updatedTask: Task) => {
+    setTasks(prev =>
+      prev.map(task =>
+        task.id === updatedTask.id ? updatedTask : task
+      )
+    )
+  }
+
+  const handleRequestDelete = (task: Task) => {
+    setTaskToDelete(task)
+    setIsDeleteOpen(true)
+  }
+
+  const handleDeleteTask = () => {
+    if (!taskToDelete) return
+
+    setTasks(prev =>
+      prev.filter(task => task.id !== taskToDelete.id)
+    )
+
+    setTaskToDelete(null)
+  }
+
+  const handleToggleComplete = (task: Task) => {
+    setTasks(prev =>
+      prev.map(t =>
+        t.id === task.id
+          ? { ...t, completed: !t.completed }
+          : t
+      )
+    )
   }
 
   // ✅ Sort tasks by due date first (you already had this logic)
@@ -41,7 +80,7 @@ export default function ScheduleScreen() {
     <div className="min-h-screen flex flex-col">
 
       {/* Fixed Task Header */}
-      <div className="fixed top-[70px] left-0 right-0 z-40 px-4 py-2 bg-[#0B0F1A] border-b border-gray-800">
+      <div className="fixed top-[70px] left-0 right-0 z-40 px-4 py-2 bg-[#0B0F1A]">
         <TaskHeader
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
@@ -69,7 +108,7 @@ export default function ScheduleScreen() {
           </div>
         </div>
       ) : (
-        <div className="pt-[150px] pb-20">
+        <div className="pt-[170px] pb-20">
           <div className="relative">
 
             {/* Vertical Timeline Line */}
@@ -98,7 +137,15 @@ export default function ScheduleScreen() {
                       )}
 
                       <div className={index > 0 ? "ml-12 mt-4" : ""}>
-                        <ScheduleTaskCard task={task} />
+                        <ScheduleTaskCard
+                          task={task}
+                          onEdit={(task) => {
+                            setEditingTask(task)
+                            setIsModalOpen(true)
+                          }}
+                          onToggleComplete={handleToggleComplete}
+                          onDelete={(task) => handleRequestDelete(task)}
+                        />
                       </div>
 
                     </div>
@@ -115,9 +162,35 @@ export default function ScheduleScreen() {
 
       <TaskCreateModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false)
+          setEditingTask(null)   // ✅ reset edit mode
+        }}
         defaultDate={selectedDate}
         onCreate={handleCreateTask}
+        onUpdate={handleUpdateTask}   // ✅ NEW
+        editingTask={editingTask}
+      />
+
+
+      <ConfirmActionModal
+        isOpen={isDeleteOpen}
+        onClose={() => {
+          setIsDeleteOpen(false)
+          setTaskToDelete(null)
+        }}
+        onConfirm={handleDeleteTask}
+        title="Delete Task?"
+        description={
+          <>
+            This action will permanently delete{" "}
+            <span className="text-white font-medium">
+              {taskToDelete?.title}
+            </span>.
+          </>
+        }
+        confirmText="Delete"
+        confirmColor="red"
       />
 
     </div>
