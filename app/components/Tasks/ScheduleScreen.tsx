@@ -14,9 +14,15 @@ import { Task, TaskInput } from "@/app/types/task"
 
 import { createTaskAction, getTasksAction, deleteTaskAction } from "@/app/actions/task"
 
-export default function ScheduleScreen() {
+export default function ScheduleScreen({tasks, setTasks, loading} : {
+  tasks: Task[]
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>
+  loading: boolean
+}) {
 
-  const [tasks, setTasks] = useState<Task[]>([])
+  // const [tasks, setTasks] = useState<Task[]>([])
+  // const [loading, setLoading] = useState(true)
+
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState(new Date())
 
@@ -24,35 +30,6 @@ export default function ScheduleScreen() {
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const loadTasks = async () => {
-    try {
-      const data = await getTasksAction()
-
-      // convert DB result into Task type
-      const formattedTasks: Task[] = data.map((task: any) => ({
-        ...task,
-        dueDate: new Date(task.dueDate),
-        createdAt: new Date(task.createdAt),
-        priority: task.priority as "low" | "medium" | "high"
-      }))
-
-      setTasks(formattedTasks)
-
-    } 
-    catch (error) {
-      console.error("Failed to load tasks:", error)
-    }
-    finally {
-      setLoading(false)   // 
-    }
-    
-  }
-
-    loadTasks()
-  }, [])
 
   const handleCreateTask = async (newTask: TaskInput) => {
 

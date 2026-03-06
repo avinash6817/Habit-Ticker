@@ -9,10 +9,13 @@ import { DndContext, closestCenter,MouseSensor, TouchSensor, useSensor, useSenso
 import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable"
 
 import { Habit } from "./types/habit"
+import { Task } from "./types/task"
+
+import { getTasksAction } from "./actions/task"
 
 import Header from "./components/Header"
 import DateScroller from "./components/Habits/DateScroller"
-import FloatingButton from "./components/FloatingButton"
+import CreateHabitButton from "./components/CreateHabitButton"
 import HabitModal from "./components/Habits/HabitModal"
 import HabitCard from "./components/Habits/HabitCard"
 import SettingsScreen from "./components/Settings/SettingsScreen"
@@ -81,6 +84,31 @@ export default function Home() {
     loadHabits()
   }, [])
 
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        const data = await getTasksAction()
+
+        const formattedTasks: Task[] = data.map((task: any) => ({
+          ...task,
+          dueDate: new Date(task.dueDate),
+          createdAt: new Date(task.createdAt),
+          priority: task.priority as "low" | "medium" | "high"
+        }))
+
+        setTasks(formattedTasks)
+      }
+      catch (error) {
+        console.error("Failed to load tasks:", error)
+      }
+      finally {
+        setTasksLoading(false)
+      }
+    }
+
+  loadTasks()
+}, [])
+
   const today = new Date()
 
   const formatDate = (date: Date) => {
@@ -106,6 +134,9 @@ export default function Home() {
   const [restoringHabit, setRestoringHabit] = useState<Habit | null>(null)
 
   const [activeScreen, setActiveScreen] = useState<"habits" | "tasks">("habits")
+
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [tasksLoading, setTasksLoading] = useState(true)
 
   
 
@@ -358,10 +389,15 @@ export default function Home() {
       )}
 
       {/* Schedule Screen */}
-      {activeScreen === "tasks" && <ScheduleScreen />}
+      {activeScreen === "tasks" && (
+        <ScheduleScreen
+          tasks={tasks}
+          setTasks={setTasks}
+          loading={tasksLoading}
+      />)}
 
       {activeScreen === "habits" && (
-        <FloatingButton
+        <CreateHabitButton
           onClick={() => {
             setEditingHabit(null)
             setOpen(true)
