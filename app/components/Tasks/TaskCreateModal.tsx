@@ -28,7 +28,7 @@ export default function TaskCreateModal({
   editingTask,
 }: TaskCreateModalProps) {
 
-  const today = new Date()
+  // const today = new Date()
 
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
@@ -99,35 +99,13 @@ export default function TaskCreateModal({
     onClose()
   }
 
-  // const handleSubmit = () => {
-  //   if (!title.trim()) return
-
-  //   const taskData = {
-  //     id: editingTask ? editingTask.id : Date.now(),
-  //     title,
-  //     description,
-  //     dueDate,
-  //     reminderTime,
-  //     priority,
-  //     category,
-  //     completed,
-  //     createdAt: editingTask ? editingTask.createdAt : new Date(),
-  //   }
-
-  //   if (editingTask && onUpdate) {
-  //     onUpdate(taskData)
-  //   } 
-  //   else {
-  //     onCreate(taskData)
-  //   }
-
-  //   handleClose()
-  //   setTitle("")
-  //   setDescription("")
-  // }
 
   const handleSubmit = async () => {
     if (!title.trim()) return
+
+    if (Notification.permission !== "granted") {
+      await Notification.requestPermission()
+    }
 
     const taskData : TaskInput = {
       title,

@@ -37,6 +37,34 @@ from "./actions/habit"
 
 export default function Home() {
 
+  // scheduleReminder.ts
+  const scheduleReminder = (task: Task) => {
+    if (!("Notification" in window)) return
+
+    // Request permission if not already granted
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          scheduleReminder(task) // retry after granting
+        }
+      })
+      return
+    }
+
+    console.log(`Reminder scheduled for "${task.title}" in 5 seconds`)
+
+    // 5-second test delay
+    setTimeout(() => {
+      new Notification("Task Reminder", {
+        body: `${task.title} is starting now`,
+        icon: "/Habit-Ticker-192.png",
+        badge: "/Habit-Ticker-192.png",
+      })
+
+      console.log(`Notification shown for "${task.title}"`)
+    }, 5000)
+  }
+
   useEffect(() => {
     const loadHabits = async () => {
       try {
@@ -97,6 +125,10 @@ export default function Home() {
         }))
 
         setTasks(formattedTasks)
+
+        formattedTasks.forEach((task) => {
+          scheduleReminder(task)
+        })
       }
       catch (error) {
         console.error("Failed to load tasks:", error)

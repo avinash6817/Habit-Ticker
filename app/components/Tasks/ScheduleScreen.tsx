@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { ClipboardList } from "lucide-react"
 
 import TaskHeader from "./TaskHeader"
@@ -12,16 +12,13 @@ import ConfirmActionModal from "../ConfirmActionModal"
 
 import { Task, TaskInput } from "@/app/types/task"
 
-import { createTaskAction, getTasksAction, deleteTaskAction } from "@/app/actions/task"
+import { createTaskAction, deleteTaskAction } from "@/app/actions/task"
 
 export default function ScheduleScreen({tasks, setTasks, loading} : {
   tasks: Task[]
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>
   loading: boolean
 }) {
-
-  // const [tasks, setTasks] = useState<Task[]>([])
-  // const [loading, setLoading] = useState(true)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -30,6 +27,32 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
+  // scheduleReminder.ts
+const scheduleReminder = (task: Task) => {
+  if (!("Notification" in window)) return
+
+  // Request permission if not already granted
+  if (Notification.permission !== "granted") {
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        scheduleReminder(task) // retry after granting
+      }
+    })
+    return
+  }
+
+  console.log(`Reminder scheduled for "${task.title}" in 5 seconds`)
+
+  setTimeout(() => {
+    new Notification("Task Reminder", {
+      body: `${task.title} is starting now`,
+      icon: "/Habit-Ticker-192.png",
+      badge: "/Habit-Ticker-192.png",
+    })
+
+    console.log(`Notification shown for "${task.title}"`)
+  }, 5000)
+}
 
   const handleCreateTask = async (newTask: TaskInput) => {
 
@@ -43,7 +66,11 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
       completed: newTask.completed
     })
 
-    setTasks(prev => [...prev, createdTask as Task])
+    const task = createdTask as Task
+
+    setTasks(prev => [...prev, task])
+
+    scheduleReminder(task)
   }
 
   const handleUpdateTask = (updatedTask: Task) => {
