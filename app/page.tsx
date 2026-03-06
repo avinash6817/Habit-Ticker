@@ -34,52 +34,52 @@ from "./actions/habit"
 
 export default function Home() {
 
-    useEffect(() => {
-      const loadHabits = async () => {
-        try {
-          const active = await getHabitsAction()
-          const archived = await getArchivedHabitsAction()
+  useEffect(() => {
+    const loadHabits = async () => {
+      try {
+        const active = await getHabitsAction()
+        const archived = await getArchivedHabitsAction()
 
-          // 🔥 Format createdAt for active habits
-          const formattedActive = active.map((habit: any) => {
-            const dateObj = new Date(habit.createdAt)
-            const year = dateObj.getFullYear()
-            const month = String(dateObj.getMonth() + 1).padStart(2, "0")
-            const day = String(dateObj.getDate()).padStart(2, "0")
+        // 🔥 Format createdAt for active habits
+        const formattedActive = active.map((habit: any) => {
+          const dateObj = new Date(habit.createdAt)
+          const year = dateObj.getFullYear()
+          const month = String(dateObj.getMonth() + 1).padStart(2, "0")
+          const day = String(dateObj.getDate()).padStart(2, "0")
 
-            return {
-              ...habit,
-              createdAt: `${year}-${month}-${day}`,
-            }
-          })
+          return {
+            ...habit,
+            createdAt: `${year}-${month}-${day}`,
+          }
+        })
 
-          // 🔥 Format createdAt for archived habits
-          const formattedArchived = archived.map((habit: any) => {
-            const dateObj = new Date(habit.createdAt)
-            const year = dateObj.getFullYear()
-            const month = String(dateObj.getMonth() + 1).padStart(2, "0")
-            const day = String(dateObj.getDate()).padStart(2, "0")
+        // 🔥 Format createdAt for archived habits
+        const formattedArchived = archived.map((habit: any) => {
+          const dateObj = new Date(habit.createdAt)
+          const year = dateObj.getFullYear()
+          const month = String(dateObj.getMonth() + 1).padStart(2, "0")
+          const day = String(dateObj.getDate()).padStart(2, "0")
 
-            return {
-              ...habit,
-              createdAt: `${year}-${month}-${day}`,
-            }
-          })
+          return {
+            ...habit,
+            createdAt: `${year}-${month}-${day}`,
+          }
+        })
 
-          setHabits(formattedActive)
-          setArchivedHabits(formattedArchived)
+        setHabits(formattedActive)
+        setArchivedHabits(formattedArchived)
 
-        } 
-        catch (error) {
-          console.error("Failed to load habits:", error)
-        }
-        finally{
-          setLoading(false)
-        }
+      } 
+      catch (error) {
+        console.error("Failed to load habits:", error)
       }
+      finally{
+        setLoading(false)
+      }
+    }
 
-      loadHabits()
-    }, [])
+    loadHabits()
+  }, [])
 
   const today = new Date()
 
@@ -275,11 +275,43 @@ export default function Home() {
           >
             {loading ? (
               <div className="flex flex-col gap-5 px-2 pt-40">
-                {[...Array(4)].map((_, i) => (
+                {[...Array(3)].map((_, i) => (
                   <div
                     key={i}
-                    className="h-28 rounded-2xl bg-[#1F2937] animate-pulse"
-                  />
+                    className="rounded-3xl border border-purple-300/30 p-5 bg-[#0F172A] animate-pulse"
+                  >
+                    {/* Top section */}
+                    <div className="flex items-center justify-between mb-6">
+                      
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-gray-700" />
+                        <div className="h-5 w-32 bg-gray-700 rounded" />
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gray-700" />
+                        <div className="w-6 h-6 rounded bg-gray-700" />
+                      </div>
+
+                    </div>
+
+                    {/* Grid loader */}
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(16px,1fr))] gap-2 mb-6">
+                      {[...Array(56)].map((_, j) => (
+                        <div
+                          key={j}
+                          className="aspect-square rounded bg-gray-700"
+                        />
+                      ))}
+                    </div>
+
+                    {/* Footer */}
+                    <div className="flex justify-between items-center">
+                      <div className="h-4 w-28 bg-gray-700 rounded" />
+                      <div className="h-6 w-32 bg-gray-700 rounded-full" />
+                    </div>
+
+                  </div>
                 ))}
               </div>
             ) : habits.length === 0 ? (

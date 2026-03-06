@@ -24,7 +24,10 @@ export default function ScheduleScreen() {
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
-  const loadTasks = async () => {
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const loadTasks = async () => {
     try {
       const data = await getTasksAction()
 
@@ -42,9 +45,12 @@ export default function ScheduleScreen() {
     catch (error) {
       console.error("Failed to load tasks:", error)
     }
+    finally {
+      setLoading(false)   // 
+    }
+    
   }
 
-  useEffect(() => {
     loadTasks()
   }, [])
 
@@ -135,26 +141,43 @@ export default function ScheduleScreen() {
         />
       </div>
 
-      {tasks.length === 0 ? (
-        <div className="flex flex-1 items-center justify-center">
-          <div className="flex flex-col items-center text-center px-6">
-            
-            <div className="w-16 h-16 rounded-2xl bg-[#1F2937] flex items-center justify-center mb-4 shadow-inner">
-              <ClipboardList className="text-green-400" size={28} />
-            </div>
+      {loading ? (
+          <div className="flex flex-col gap-5 px-4 pt-[170px] pb-20">
+            {[...Array(6)].map((_, i) => (
+              <div className="flex items-center gap-4 bg-[#1F2937] rounded-2xl p-4 animate-pulse"
+                key={i}
+                >
+  
+                <div className="w-10 h-10 rounded-full bg-gray-700" />
 
-            <h3 className="text-white font-semibold text-lg">
-              No Tasks Scheduled
-            </h3>
+                <div className="flex flex-col gap-2 flex-1">
+                  <div className="h-4 w-32 bg-gray-700 rounded" />
+                  <div className="h-3 w-24 bg-gray-700 rounded" />
+                </div>
 
-            <p className="text-gray-500 text-sm mt-2 max-w-xs">
-              You don't have any tasks for this date yet.  
-              Tap <span className="text-green-400 font-medium">New Task</span> to get started.
-            </p>
-
+              </div>
+            ))}
           </div>
-        </div>
-      ) : (
+          ) : tasks.length === 0 ? (
+          <div className="flex flex-1 items-center justify-center">
+            <div className="flex flex-col items-center text-center px-6">
+              
+              <div className="w-16 h-16 rounded-2xl bg-[#1F2937] flex items-center justify-center mb-4 shadow-inner">
+                <ClipboardList className="text-green-400" size={28} />
+              </div>
+
+              <h3 className="text-white font-semibold text-lg">
+                No Tasks Scheduled
+              </h3>
+
+              <p className="text-gray-500 text-sm mt-2 max-w-xs">
+                You don't have any tasks for this date yet.  
+                Tap <span className="text-green-400 font-medium">New Task</span> to get started.
+              </p>
+
+            </div>
+          </div>
+          ) : (
         <div className="pt-[170px] pb-20">
           <div className="relative">
 
