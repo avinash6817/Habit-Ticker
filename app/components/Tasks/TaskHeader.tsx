@@ -2,7 +2,7 @@
 
 import { CalendarDays, Plus, ChevronDown } from "lucide-react"
 import { useState } from "react"
-import DatePicker from "./DatePicker"
+import DatePicker from "../DatePicker"
 
 interface TaskHeaderProps {
   selectedDate: Date

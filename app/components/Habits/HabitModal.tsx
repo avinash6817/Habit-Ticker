@@ -5,10 +5,10 @@
 import { X } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { habitColors, habitColorTextMap } from "../utilities/theme"
-import { IconsList, IconsMapList } from "../utilities/icons"
+import { habitColors,habitColorTextMap } from "@/app/utilities/theme"
+import { IconsList,IconsMapList } from "@/app/utilities/icons"
 
-import { createHabitAction, updateHabitAction } from "../actions/habit"
+import { createHabitAction, updateHabitAction } from "@/app/actions/habit"
 
 type HabitModalProps = {
   isOpen: boolean

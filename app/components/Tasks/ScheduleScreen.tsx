@@ -2,13 +2,17 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ClipboardList } from "lucide-react"
+
 import TaskHeader from "./TaskHeader"
 import TaskCreateModal from "./TaskCreateModal"
 import ScheduleTaskCard from "./ScheduleTaskCard"
-import ConfirmActionModal from "./ConfirmActionModal"
-import { Task } from "../types/task"
+import ConfirmActionModal from "../ConfirmActionModal"
+
+import { Task, TaskInput } from "@/app/types/task"
+
+import { createTaskAction, getTasksAction, deleteTaskAction } from "@/app/actions/task"
 
 export default function ScheduleScreen() {
 
@@ -20,8 +24,43 @@ export default function ScheduleScreen() {
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
-  const handleCreateTask = (newTask: Task) => {
-    setTasks(prev => [...prev, newTask])
+  const loadTasks = async () => {
+    try {
+      const data = await getTasksAction()
+
+      // convert DB result into Task type
+      const formattedTasks: Task[] = data.map((task: any) => ({
+        ...task,
+        dueDate: new Date(task.dueDate),
+        createdAt: new Date(task.createdAt),
+        priority: task.priority as "low" | "medium" | "high"
+      }))
+
+      setTasks(formattedTasks)
+
+    } 
+    catch (error) {
+      console.error("Failed to load tasks:", error)
+    }
+  }
+
+  useEffect(() => {
+    loadTasks()
+  }, [])
+
+  const handleCreateTask = async (newTask: TaskInput) => {
+
+    const createdTask = await createTaskAction({
+      title: newTask.title,
+      description: newTask.description,
+      dueDate: newTask.dueDate,
+      reminderTime: newTask.reminderTime,
+      priority: newTask.priority,
+      category: newTask.category,
+      completed: newTask.completed
+    })
+
+    setTasks(prev => [...prev, createdTask as Task])
   }
 
   const handleUpdateTask = (updatedTask: Task) => {
@@ -37,14 +76,22 @@ export default function ScheduleScreen() {
     setIsDeleteOpen(true)
   }
 
-  const handleDeleteTask = () => {
+  const handleDeleteTask = async () => {
     if (!taskToDelete) return
 
-    setTasks(prev =>
-      prev.filter(task => task.id !== taskToDelete.id)
-    )
+    try {
+      await deleteTaskAction(taskToDelete.id)
 
-    setTaskToDelete(null)
+      setTasks(prev =>
+        prev.filter(task => task.id !== taskToDelete.id)
+      )
+
+      setTaskToDelete(null)
+
+    } 
+    catch (error) {
+      console.error("Delete failed", error)
+    }
   }
 
   const handleToggleComplete = (task: Task) => {
@@ -164,11 +211,11 @@ export default function ScheduleScreen() {
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false)
-          setEditingTask(null)   // ✅ reset edit mode
+          setEditingTask(null)
         }}
         defaultDate={selectedDate}
         onCreate={handleCreateTask}
-        onUpdate={handleUpdateTask}   // ✅ NEW
+        onUpdate={handleUpdateTask}
         editingTask={editingTask}
       />
 
@@ -180,7 +227,7 @@ export default function ScheduleScreen() {
           setTaskToDelete(null)
         }}
         onConfirm={handleDeleteTask}
-        title="Delete Task?"
+        title="Delete Task ?"
         description={
           <>
             This action will permanently delete{" "}
@@ -196,5 +243,3 @@ export default function ScheduleScreen() {
     </div>
   )
 }
-
-

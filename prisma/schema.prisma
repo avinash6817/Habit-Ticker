@@ -40,3 +40,17 @@ model HabitLog {
 
   @@unique([habitId, date])
 }
+
+
+model Task {
+  id           Int      @id @default(autoincrement())
+  title        String
+  description  String
+  dueDate      DateTime
+  reminderTime String
+  priority     String
+  category     String
+  completed    Boolean  @default(false)
+
+  createdAt    DateTime @default(now())
+}

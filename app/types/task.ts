@@ -9,3 +9,13 @@ export interface Task {
   completed: boolean
   createdAt: Date
 }
+
+export type TaskInput = {
+  title: string
+  description: string
+  dueDate: Date
+  reminderTime: string
+  priority: "low" | "medium" | "high"
+  category: string
+  completed: boolean
+}

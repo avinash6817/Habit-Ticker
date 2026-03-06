@@ -2,17 +2,9 @@
 
 import { ArrowLeft, RotateCcw, Trash2, Archive } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { IconsMapList } from "../utilities/icons"
+import { IconsMapList } from "@/app/utilities/icons"
+import { Habit } from "@/app/types/habit"
 
-interface Habit {
-  id: number
-  name: string
-  completions: string[]
-  icon: string
-  color: string
-  createdAt: string
-  order: number
-}
 
 type ArchiveScreenProps = {
   isOpen: boolean

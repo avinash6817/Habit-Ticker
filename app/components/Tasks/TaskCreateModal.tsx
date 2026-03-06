@@ -4,14 +4,18 @@
 
 import { useState, useEffect } from "react"
 import { X, CalendarDays, ChevronDown, Check, Clock } from "lucide-react"
-import DatePicker from "./DatePicker"
+import DatePicker from "../DatePicker"
+
+import { TaskInput } from "@/app/types/task"
+
+import { updateTaskAction } from "@/app/actions/task"
 
 interface TaskCreateModalProps {
   isOpen: boolean
   onClose: () => void
   defaultDate: Date
   onCreate: (task: any) => void
-  onUpdate?: (task: any) => void      // ✅ NEW
+  onUpdate?: (task: any) => void
   editingTask?: any | null     
 }
 
@@ -95,24 +99,56 @@ export default function TaskCreateModal({
     onClose()
   }
 
-  const handleSubmit = () => {
+  // const handleSubmit = () => {
+  //   if (!title.trim()) return
+
+  //   const taskData = {
+  //     id: editingTask ? editingTask.id : Date.now(),
+  //     title,
+  //     description,
+  //     dueDate,
+  //     reminderTime,
+  //     priority,
+  //     category,
+  //     completed,
+  //     createdAt: editingTask ? editingTask.createdAt : new Date(),
+  //   }
+
+  //   if (editingTask && onUpdate) {
+  //     onUpdate(taskData)
+  //   } 
+  //   else {
+  //     onCreate(taskData)
+  //   }
+
+  //   handleClose()
+  //   setTitle("")
+  //   setDescription("")
+  // }
+
+  const handleSubmit = async () => {
     if (!title.trim()) return
 
-    const taskData = {
-      id: editingTask ? editingTask.id : Date.now(),
+    const taskData : TaskInput = {
       title,
       description,
       dueDate,
       reminderTime,
       priority,
       category,
-      completed,
-      createdAt: editingTask ? editingTask.createdAt : new Date(),
+      completed
     }
 
     if (editingTask && onUpdate) {
-      onUpdate(taskData)
-    } else {
+
+      const updatedTask = await updateTaskAction({
+        id: editingTask.id,
+        ...taskData
+      })
+
+      onUpdate(updatedTask)
+    } 
+    else {
       onCreate(taskData)
     }
 

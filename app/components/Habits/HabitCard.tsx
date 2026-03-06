@@ -1,26 +1,19 @@
 
 "use client"
 
-import { Check, MoreVertical, Pencil, Trash2, Archive,Trophy, Sparkles } from "lucide-react"
 import { useState } from "react"
-import { habitColorHexMap } from "../utilities/theme"
+import { Check, MoreVertical, Pencil, Trash2, Archive,Trophy, Sparkles } from "lucide-react"
+
+import { Habit } from "@/app/types/habit"
 
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 
-import { IconsMapList } from "../utilities/icons"
+import { habitColorHexMap } from "@/app/utilities/theme"
+import { IconsMapList } from "@/app/utilities/icons"
 
-import { toggleHabitCompletionAction } from "../actions/habit" 
+import { toggleHabitCompletionAction } from "@/app/actions/habit" 
 
-interface Habit {
-  id: number
-  name: string
-  completions: string[]
-  icon: string
-  color: string
-  createdAt: string
-  order: number
-}
 
 interface HabitCardProps {
   habit: Habit

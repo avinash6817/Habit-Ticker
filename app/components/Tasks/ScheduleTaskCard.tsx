@@ -4,7 +4,8 @@
 
 import { useState, useRef, useEffect } from "react"
 import { Flag } from "lucide-react"
-import { Task } from "../types/task"
+
+import { Task } from "@/app/types/task"
 
 interface Props {
   task: Task

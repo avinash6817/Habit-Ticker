@@ -2,22 +2,24 @@
 
 "use client"
 
+import { useState, useEffect } from "react"
 import { AlertTriangle,ArchiveRestore, PlusCircle} from "lucide-react"
 
 import { DndContext, closestCenter,MouseSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core"
 import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable"
 
-import { useState, useEffect } from "react"
+import { Habit } from "./types/habit"
+
 import Header from "./components/Header"
-import DateScroller from "./components/DateScroller"
+import DateScroller from "./components/Habits/DateScroller"
 import FloatingButton from "./components/FloatingButton"
-import HabitModal from "./components/HabitModal"
-import HabitCard from "./components/HabitCard"
-import SettingsScreen from "./components/SettingsScreen"
-import ArchiveScreen from "./components/ArchiveScreen"
+import HabitModal from "./components/Habits/HabitModal"
+import HabitCard from "./components/Habits/HabitCard"
+import SettingsScreen from "./components/Settings/SettingsScreen"
+import ArchiveScreen from "./components/Settings/ArchiveScreen"
 import ConfirmActionModal from "./components/ConfirmActionModal"
 import BottomSwitcher from "./components/BottomSwitcher"
-import ScheduleScreen from "./components/ScheduleScreen"
+import ScheduleScreen from "./components/Tasks/ScheduleScreen"
 
 
 // Importing Server Functions
@@ -29,18 +31,6 @@ import {  getHabitsAction,
           getArchivedHabitsAction
         } 
 from "./actions/habit"
-
-
-
-interface Habit {
-  id: number
-  name: string
-  completions: string[]
-  icon: string
-  color: string
-  createdAt: string
-  order: number
-}
 
 export default function Home() {
 
