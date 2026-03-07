@@ -1,5 +1,7 @@
 const CACHE_NAME = "habit-tracker-v1"
 
+const reminderTimers = {}
+
 const urlsToCache = [
   "/",
 ]
@@ -41,4 +43,44 @@ self.addEventListener("notificationclick", (event) => {
       }
     })
   )
+})
+
+
+self.addEventListener("message", (event) => {
+
+  if (event.data?.type === "SCHEDULE_REMINDER") {
+
+    const { id, title, delay } = event.data.payload
+
+    if (reminderTimers[id]) {
+      clearTimeout(reminderTimers[id])
+    }
+
+    console.log("SW scheduling reminder:", title)
+
+    reminderTimers[id] = setTimeout(() => {
+
+      self.registration.showNotification("Task Reminder", {
+        body: `${title} is starting now`,
+        icon: "/Hab-Icon-192.png",
+        badge: "/Hab-Icon-72.png",
+        tag: `task-${id}`
+      })
+
+      console.log("Notification triggered:", title)
+
+    }, delay)
+
+  }
+
+  if (event.data?.type === "CANCEL_REMINDER") {
+
+    const { id } = event.data.payload
+
+    if (reminderTimers[id]) {
+      clearTimeout(reminderTimers[id])
+      delete reminderTimers[id]
+    }
+  }
+
 })

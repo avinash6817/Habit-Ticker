@@ -44,28 +44,33 @@ export default function HabitCard({
   isDragging,
 } = useSortable({ id: habit.id })
 
-const style = {
-  transform: CSS.Transform.toString(transform),
-  transition,
-}
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
 
   const [menuOpen, setMenuOpen] = useState(false)
+  const completions = habit.completions ?? []
+
+  // const formatDate = (date: Date) => {
+  //   const year = date.getFullYear()
+  //   const month = String(date.getMonth() + 1).padStart(2, "0")
+  //   const day = String(date.getDate()).padStart(2, "0")
+
+  //   return `${year}-${month}-${day}`
+  // }
 
   const formatDate = (date: Date) => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, "0")
-    const day = String(date.getDate()).padStart(2, "0")
-
-    return `${year}-${month}-${day}`
+    return date.toISOString().split("T")[0]
   }
 
   const isBeforeCreation = selectedDate < habit.createdAt
 
   const toggleComplete = async () => {
-  // Block marking before creation date
+    // Block marking before creation date
     if (isBeforeCreation) return
 
-    const exists = habit.completions.includes(selectedDate)
+    const exists = completions.includes(selectedDate)
 
     let updatedCompletions
 
@@ -79,7 +84,8 @@ const style = {
     }
 
     const unique = Array.from(new Set(updatedCompletions))
-    unique.sort()
+    // unique.sort()
+    unique.sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
 
     setHabit({ ...habit, completions: unique })
 
@@ -103,7 +109,7 @@ const style = {
     while (true) {
       const dateStr = formatDate(current)
 
-      if (habit.completions.includes(dateStr)) {
+      if (completions.includes(dateStr)) {
         streak++
         current.setDate(current.getDate() - 1)
       } 
@@ -116,9 +122,11 @@ const style = {
   }
 
   const calculateHighestStreak = () => {
-    if (habit.completions.length === 0) return 0
+    if (completions.length === 0) return 0
 
-    const sorted = [...habit.completions].sort()
+    const sorted = [...completions].sort(
+      (a, b) => new Date(a).getTime() - new Date(b).getTime()
+    )
 
     let maxStreak = 1
     let currentStreak = 1
@@ -201,7 +209,7 @@ const style = {
               transition
               ${isBeforeCreation ? "opacity-40 cursor-not-allowed" : ""}
               ${
-                habit.completions.includes(selectedDate)
+                completions.includes(selectedDate)
                   ? `${habit.color} text-black`
                   : "bg-[#1F2937]"
               }
@@ -281,7 +289,7 @@ const style = {
             className={`
               w-4 h-4 rounded-sm
               ${
-                habit.completions.includes(day)
+                completions.includes(day)
                   ? habit.color
                   : "bg-[#1F2937]"
               }

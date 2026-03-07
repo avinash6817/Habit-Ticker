@@ -1,7 +1,7 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { Task, TaskInput } from "@/app/types/task"
+import { TaskInput } from "@/app/types/task"
 
 
 export async function createTaskAction(data: TaskInput) {
@@ -76,4 +76,21 @@ export async function deleteTaskAction(id: number) {
   })
 
   return { success: true }
+}
+
+export async function toggleTaskCompletionAction(taskId: number) {
+  const task = await prisma.task.findUnique({
+    where: { id: taskId }
+  })
+
+  if (!task) throw new Error("Task not found")
+
+  const updatedTask = await prisma.task.update({
+    where: { id: taskId },
+    data: {
+      completed: !task.completed
+    }
+  })
+
+  return updatedTask
 }

@@ -25,6 +25,39 @@ export async function createHabitAction(data: {
   })
 }
 
+// export async function getHabitsAction() {
+//   const habits = await prisma.habit.findMany({
+//     where: { isArchived: false },
+//     include: { logs: true },
+//     orderBy: { order: "asc" },
+//   })
+
+//   return habits.map((habit) => {
+//     // ✅ normalize createdAt
+//     const created = habit.createdAt
+//     const year = created.getFullYear()
+//     const month = String(created.getMonth() + 1).padStart(2, "0")
+//     const day = String(created.getDate()).padStart(2, "0")
+
+//     return {
+//       id: habit.id,
+//       name: habit.name,
+//       color: habit.color,
+//       icon: habit.icon,
+//       order: habit.order,
+//       createdAt: `${year}-${month}-${day}`, // ✅ FIXED
+//       completions: habit.logs.map((log) => {
+//         const logDate = log.date
+//         const y = logDate.getFullYear()
+//         const m = String(logDate.getMonth() + 1).padStart(2, "0")
+//         const d = String(logDate.getDate()).padStart(2, "0")
+//         return `${y}-${m}-${d}`
+//       }),
+//     }
+//   })
+// }
+
+
 export async function getHabitsAction() {
   const habits = await prisma.habit.findMany({
     where: { isArchived: false },
@@ -33,11 +66,20 @@ export async function getHabitsAction() {
   })
 
   return habits.map((habit) => {
-    // ✅ normalize createdAt
+
     const created = habit.createdAt
     const year = created.getFullYear()
     const month = String(created.getMonth() + 1).padStart(2, "0")
     const day = String(created.getDate()).padStart(2, "0")
+
+    // ✅ Remove duplicates + normalize date
+    const completions = Array.from(
+      new Set(
+        habit.logs
+          .filter((log) => log.completed)
+          .map((log) => log.date.toISOString().split("T")[0])
+      )
+    ).sort()
 
     return {
       id: habit.id,
@@ -45,14 +87,10 @@ export async function getHabitsAction() {
       color: habit.color,
       icon: habit.icon,
       order: habit.order,
-      createdAt: `${year}-${month}-${day}`, // ✅ FIXED
-      completions: habit.logs.map((log) => {
-        const logDate = log.date
-        const y = logDate.getFullYear()
-        const m = String(logDate.getMonth() + 1).padStart(2, "0")
-        const d = String(logDate.getDate()).padStart(2, "0")
-        return `${y}-${m}-${d}`
-      }),
+
+      createdAt: `${year}-${month}-${day}`,
+
+      completions,
     }
   })
 }
@@ -108,12 +146,43 @@ export async function updateHabitAction(
   })
 }
 
+// export async function toggleHabitCompletionAction(
+//   habitId: number,
+//   date: string
+// ) {
+//   const dateObj = new Date(date)
+//   dateObj.setHours(0, 0, 0, 0)
+
+//   const existing = await prisma.habitLog.findUnique({
+//     where: {
+//       habitId_date: {
+//         habitId,
+//         date: dateObj,
+//       },
+//     },
+//   })
+
+//   if (existing) {
+//     await prisma.habitLog.delete({
+//       where: { id: existing.id },
+//     })
+//   } 
+//   else {
+//     await prisma.habitLog.create({
+//       data: {
+//         habitId,
+//         date: dateObj,
+//       },
+//     })
+//   }
+// }
+
 export async function toggleHabitCompletionAction(
   habitId: number,
   date: string
 ) {
-  const dateObj = new Date(date)
-  dateObj.setHours(0, 0, 0, 0)
+  // Force UTC midnight to prevent timezone duplicates
+  const dateObj = new Date(date + "T00:00:00.000Z")
 
   const existing = await prisma.habitLog.findUnique({
     where: {
@@ -159,8 +228,6 @@ export async function restoreHabitAction(habitId: number) {
   })
 }
 
-
-
 export async function updateHabitOrderAction(
   habits: { id: number; order: number }[]
 ) {
@@ -173,6 +240,3 @@ export async function updateHabitOrderAction(
 
   await prisma.$transaction(updates)
 }
-
-
-

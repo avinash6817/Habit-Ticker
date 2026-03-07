@@ -7,6 +7,7 @@ import { X, CalendarDays, ChevronDown, Check, Clock } from "lucide-react"
 import DatePicker from "../DatePicker"
 
 import { TaskInput } from "@/app/types/task"
+import { scheduleReminder } from "@/lib/reminders/scheduleReminder"
 
 import { updateTaskAction } from "@/app/actions/task"
 
@@ -97,13 +98,8 @@ export default function TaskCreateModal({
     onClose()
   }
 
-
   const handleSubmit = async () => {
     if (!title.trim()) return
-
-    // if (Notification.permission !== "granted") {
-    //   await Notification.requestPermission()
-    // }
 
     const taskData : TaskInput = {
       title,
@@ -123,6 +119,7 @@ export default function TaskCreateModal({
       })
 
       onUpdate(updatedTask)
+      await scheduleReminder(updatedTask)
     } 
     else {
       onCreate(taskData)

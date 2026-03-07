@@ -88,10 +88,10 @@ export default function ScheduleTaskCard({ task, onEdit, onToggleComplete, onDel
       <div className="absolute left-6 -translate-x-1/2 flex items-center justify-center z-20">
 
         {/* Background mask to hide connector line */}
-        <div className="absolute w-10 h-10 bg-[#0B0F1A] rounded-full" />
+        <div className="absolute w-10 h-10 bg-[#0B0F1A] rounded-full pointer-events-none" />
 
         <button
-          onClick={() => onToggleComplete?.(safeTask)}
+          onClick={(e) => {onToggleComplete?.(safeTask)}}
           className={`
             relative z-10
             w-10 h-10 rounded-full flex flex-col items-center justify-center

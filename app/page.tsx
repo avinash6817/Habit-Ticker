@@ -10,6 +10,7 @@ import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-ki
 
 import { Habit } from "./types/habit"
 import { Task } from "./types/task"
+import { scheduleReminder } from "@/lib/reminders/scheduleReminder"
 
 import { getTasksAction } from "./actions/task"
 
@@ -36,40 +37,6 @@ import {  getHabitsAction,
 from "./actions/habit"
 
 export default function Home() {
-
-  
-  const scheduleReminder = (task: Task) => {
-    if (!("serviceWorker" in navigator)) return
-    if (Notification.permission !== "granted") return
-
-    const dueDate = new Date(task.dueDate)
-    if (!task.reminderTime) return
-
-    const [time, modifier] = task.reminderTime.split(" ")
-    let [hours, minutes] = time.split(":").map(Number)
-
-    if (modifier === "PM" && hours !== 12) hours += 12
-    if (modifier === "AM" && hours === 12) hours = 0
-
-    dueDate.setHours(hours, minutes, 0, 0)
-
-    const delay = dueDate.getTime() - Date.now()
-    if (delay <= 0) return
-
-    console.log(`Reminder scheduled for "${task.title}" in ${Math.floor(delay / 1000)} seconds`)
-
-    setTimeout(() => {
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.showNotification("Task Reminder", {
-          body: `${task.title} is starting now`,
-          icon: "/Habit-Ticker-192.png",
-          badge: "/Habit-Ticker-192.png",
-        })
-
-        console.log(`Notification shown for "${task.title}"`)
-      })
-    }, delay)
-  }
 
   useEffect(() => {
     const loadHabits = async () => {

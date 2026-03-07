@@ -11,8 +11,10 @@ import ScheduleTaskCard from "./ScheduleTaskCard"
 import ConfirmActionModal from "../ConfirmActionModal"
 
 import { Task, TaskInput } from "@/app/types/task"
+import { scheduleReminder } from "@/lib/reminders/scheduleReminder"
+import { cancelReminder } from "@/lib/reminders/cancelReminder"
 
-import { createTaskAction, deleteTaskAction } from "@/app/actions/task"
+import { createTaskAction, deleteTaskAction, toggleTaskCompletionAction } from "@/app/actions/task"
 
 export default function ScheduleScreen({tasks, setTasks, loading} : {
   tasks: Task[]
@@ -27,58 +29,6 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
-
-  // const scheduleReminder = (task: Task) => {
-  //   if (!("serviceWorker" in navigator)) return
-  //   if (Notification.permission !== "granted") return
-
-  //   console.log(`Reminder scheduled for "${task.title}" in 5 seconds`)
-
-  //   setTimeout(() => {
-  //     navigator.serviceWorker.ready.then((registration) => {
-  //       registration.showNotification("Task Reminder", {
-  //         body: `${task.title} is starting now`,
-  //         icon: "/Habit-Ticker-192.png",
-  //         badge: "/Habit-Ticker-192.png",
-  //       })
-
-  //       console.log(`Notification shown for "${task.title}"`)
-  //     })
-  //   }, 5000)
-  // }
-
-  const scheduleReminder = (task: Task) => {
-    if (!("serviceWorker" in navigator)) return
-    if (Notification.permission !== "granted") return
-
-    const dueDate = new Date(task.dueDate)
-    if (!task.reminderTime) return
-
-    const [time, modifier] = task.reminderTime.split(" ")
-    let [hours, minutes] = time.split(":").map(Number)
-
-    if (modifier === "PM" && hours !== 12) hours += 12
-    if (modifier === "AM" && hours === 12) hours = 0
-
-    dueDate.setHours(hours, minutes, 0, 0)
-
-    const delay = dueDate.getTime() - Date.now()
-    if (delay <= 0) return
-
-    console.log(`Reminder scheduled for "${task.title}" in ${Math.floor(delay / 1000)} seconds`)
-
-    setTimeout(() => {
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.showNotification("Task Reminder", {
-          body: `${task.title} is starting now`,
-          icon: "/Habit-Ticker-192.png",
-          badge: "/Habit-Ticker-192.png",
-        })
-
-        console.log(`Notification shown for "${task.title}"`)
-      })
-    }, delay)
-  }
 
   const handleCreateTask = async (newTask: TaskInput) => {
 
@@ -118,6 +68,8 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
     try {
       await deleteTaskAction(taskToDelete.id)
 
+      await cancelReminder(taskToDelete.id)
+
       setTasks(prev =>
         prev.filter(task => task.id !== taskToDelete.id)
       )
@@ -130,7 +82,7 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
     }
   }
 
-  const handleToggleComplete = (task: Task) => {
+  const handleToggleComplete = async (task: Task) => {
     setTasks(prev =>
       prev.map(t =>
         t.id === task.id
@@ -138,6 +90,8 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
           : t
       )
     )
+
+    await toggleTaskCompletionAction(task.id)
   }
 
   // ✅ Sort tasks by due date first (you already had this logic)
