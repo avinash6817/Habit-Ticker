@@ -27,9 +27,7 @@ export default function TaskCreateModal({
   onUpdate,
   editingTask,
 }: TaskCreateModalProps) {
-
-  // const today = new Date()
-
+  
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [dueDate, setDueDate] = useState<Date>(defaultDate || new Date())
@@ -146,7 +144,7 @@ export default function TaskCreateModal({
   if (!isOpen) return null
 
   const hours = Array.from({ length: 12 }, (_, i) => i + 1)
-  const minutes = [0, 15, 30, 45]
+  const minutes = [0,5,10,15,20,25,30,35,40,45,50,55]
 
   return (
     <>
@@ -412,12 +410,12 @@ export default function TaskCreateModal({
             </div>
 
             {/* MINUTES BELOW */}
-            <div className="flex gap-3 mt-6">
+            <div className="grid grid-cols-6 gap-2 mt-6 w-full">
                 {minutes.map(min => (
                 <button
                     key={min}
                     onClick={() => setSelectedMinute(min)}
-                    className={`px-4 py-2 text-sm rounded-lg
+                    className={`px-4 py-2 text-sm rounded-lg font-semibold
                     ${
                     selectedMinute === min
                         ? "bg-green-500 text-black"
@@ -435,7 +433,7 @@ export default function TaskCreateModal({
                 <button
                     key={p}
                     onClick={() => setPeriod(p)}
-                    className={`px-6 py-2 rounded-xl text-sm
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold
                     ${
                     period === p
                         ? "bg-green-500 text-black"

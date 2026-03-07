@@ -27,29 +27,23 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
-  // const scheduleReminder = (task: Task) => {
-  //   if (!("Notification" in window)) return
 
-  //   // Request permission if not already granted
-  //   if (Notification.permission !== "granted") {
-  //     Notification.requestPermission().then((permission) => {
-  //       if (permission === "granted") {
-  //         scheduleReminder(task) // retry after granting
-  //       }
-  //     })
-  //     return
-  //   }
+  // const scheduleReminder = (task: Task) => {
+  //   if (!("serviceWorker" in navigator)) return
+  //   if (Notification.permission !== "granted") return
 
   //   console.log(`Reminder scheduled for "${task.title}" in 5 seconds`)
 
   //   setTimeout(() => {
-  //     new Notification("Task Reminder", {
-  //       body: `${task.title} is starting now`,
-  //       icon: "/Habit-Ticker-192.png",
-  //       badge: "/Habit-Ticker-192.png",
-  //     })
+  //     navigator.serviceWorker.ready.then((registration) => {
+  //       registration.showNotification("Task Reminder", {
+  //         body: `${task.title} is starting now`,
+  //         icon: "/Habit-Ticker-192.png",
+  //         badge: "/Habit-Ticker-192.png",
+  //       })
 
-  //     console.log(`Notification shown for "${task.title}"`)
+  //       console.log(`Notification shown for "${task.title}"`)
+  //     })
   //   }, 5000)
   // }
 
@@ -57,7 +51,21 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
     if (!("serviceWorker" in navigator)) return
     if (Notification.permission !== "granted") return
 
-    console.log(`Reminder scheduled for "${task.title}" in 5 seconds`)
+    const dueDate = new Date(task.dueDate)
+    if (!task.reminderTime) return
+
+    const [time, modifier] = task.reminderTime.split(" ")
+    let [hours, minutes] = time.split(":").map(Number)
+
+    if (modifier === "PM" && hours !== 12) hours += 12
+    if (modifier === "AM" && hours === 12) hours = 0
+
+    dueDate.setHours(hours, minutes, 0, 0)
+
+    const delay = dueDate.getTime() - Date.now()
+    if (delay <= 0) return
+
+    console.log(`Reminder scheduled for "${task.title}" in ${Math.floor(delay / 1000)} seconds`)
 
     setTimeout(() => {
       navigator.serviceWorker.ready.then((registration) => {
@@ -69,7 +77,7 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
 
         console.log(`Notification shown for "${task.title}"`)
       })
-    }, 5000)
+    }, delay)
   }
 
   const handleCreateTask = async (newTask: TaskInput) => {
