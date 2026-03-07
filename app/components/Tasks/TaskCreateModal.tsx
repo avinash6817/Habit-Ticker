@@ -103,9 +103,9 @@ export default function TaskCreateModal({
   const handleSubmit = async () => {
     if (!title.trim()) return
 
-    if (Notification.permission !== "granted") {
-      await Notification.requestPermission()
-    }
+    // if (Notification.permission !== "granted") {
+    //   await Notification.requestPermission()
+    // }
 
     const taskData : TaskInput = {
       title,
