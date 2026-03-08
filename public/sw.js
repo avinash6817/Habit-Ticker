@@ -50,7 +50,7 @@ self.addEventListener("message", (event) => {
 
   if (event.data?.type === "SCHEDULE_REMINDER") {
 
-    const { id, title, delay } = event.data.payload
+    const { id, title, delay, minutes } = event.data.payload
 
     if (reminderTimers[id]) {
       clearTimeout(reminderTimers[id])
@@ -61,7 +61,7 @@ self.addEventListener("message", (event) => {
     reminderTimers[id] = setTimeout(() => {
 
       self.registration.showNotification("Task Reminder", {
-        body: `${title} is starting now`,
+        body: `${title} is starting in ${minutes} minute${minutes !== 1 ? "s" : ""}`,
         icon: "/Hab-Icon-192.png",
         badge: "/Hab-Icon-72.png",
         tag: `task-${id}`

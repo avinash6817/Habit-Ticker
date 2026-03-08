@@ -57,7 +57,8 @@ export default function ScheduleTaskCard({ task, onEdit, onToggleComplete, onDel
     title: "Untitled",
     description: "",
     dueDate: new Date(),
-    reminderTime: "09:00 AM",
+    taskScheduledTime: "09:00 AM",
+    reminderOffsetMinutes: 5,
     priority: "medium" as const,
     category: "personal",
     completed: false,
@@ -147,7 +148,7 @@ export default function ScheduleTaskCard({ task, onEdit, onToggleComplete, onDel
           <div className="flex gap-2 text-[8px]">
 
             <div className="flex items-center bg-[#0F172A] px-2 py-1 rounded-full text-gray-300">
-              {safeTask.reminderTime}
+              {safeTask.taskScheduledTime}
             </div>
 
             <div className="flex items-center bg-[#0F172A] px-2 py-1 rounded-full text-gray-300 capitalize">

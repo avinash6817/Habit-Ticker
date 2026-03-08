@@ -13,6 +13,7 @@ import ConfirmActionModal from "../ConfirmActionModal"
 import { Task, TaskInput } from "@/app/types/task"
 import { scheduleReminder } from "@/lib/reminders/scheduleReminder"
 import { cancelReminder } from "@/lib/reminders/cancelReminder"
+import { playCompleteSound } from "@/lib/sound/playSound"
 
 import { createTaskAction, deleteTaskAction, toggleTaskCompletionAction } from "@/app/actions/task"
 
@@ -36,7 +37,8 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
       title: newTask.title,
       description: newTask.description,
       dueDate: newTask.dueDate,
-      reminderTime: newTask.reminderTime,
+      taskScheduledTime: newTask.taskScheduledTime,
+      reminderOffsetMinutes: newTask.reminderOffsetMinutes,
       priority: newTask.priority,
       category: newTask.category,
       completed: newTask.completed
@@ -83,6 +85,8 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
   }
 
   const handleToggleComplete = async (task: Task) => {
+    const willBeCompleted = !task.completed
+
     setTasks(prev =>
       prev.map(t =>
         t.id === task.id
@@ -90,6 +94,10 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
           : t
       )
     )
+
+   if (willBeCompleted) {
+      playCompleteSound()
+    }
 
     await toggleTaskCompletionAction(task.id)
   }

@@ -5,6 +5,7 @@ import { useState } from "react"
 import { Check, MoreVertical, Pencil, Trash2, Archive,Trophy, Sparkles } from "lucide-react"
 
 import { Habit } from "@/app/types/habit"
+import { playCompleteSound } from "@/lib/sound/playSound"
 
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
@@ -94,16 +95,17 @@ export default function HabitCard({
     unique.sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
 
     setHabit({ ...habit, completions: unique })
-
     try {
-    // ✅ 2. Sync with DB
+      if (!exists) {
+        playCompleteSound()
+      }
       await toggleHabitCompletionAction(habit.id, selectedDate)
     } 
     catch (error) {
       console.error("Toggle failed:", error)
 
-    // ✅ 3. Optional rollback if error
-    setHabit(habit)
+    // Optional rollback if error
+      setHabit(habit)
     }
   }
 

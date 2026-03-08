@@ -2,18 +2,19 @@ type ReminderTask = {
   id: number
   title: string
   dueDate: Date
-  reminderTime?: string | null
+  taskScheduledTime: string
+  reminderOffsetMinutes: number
 }
 
 export const scheduleReminder = async (task: ReminderTask) => {
   if (typeof window === "undefined") return
   if (!("serviceWorker" in navigator)) return
   if (Notification.permission !== "granted") return
-  if (!task.reminderTime) return
+  if (!task.taskScheduledTime) return
 
   const dueDate = new Date(task.dueDate)
 
-  const [time, modifier] = task.reminderTime.split(" ")
+  const [time, modifier] = task.taskScheduledTime.split(" ")
   let [hours, minutes] = time.split(":").map(Number)
 
   if (modifier === "PM" && hours !== 12) hours += 12
@@ -21,12 +22,19 @@ export const scheduleReminder = async (task: ReminderTask) => {
 
   dueDate.setHours(hours, minutes, 0, 0)
 
-  // const delay = dueDate.getTime() - Date.now()
-  const delay = 5000
+  console.log("Reminder offset:", task.reminderOffsetMinutes, "minutes")
+  const reminderTime = dueDate.getTime() - task.reminderOffsetMinutes * 60000
+  console.log("Task time:", dueDate.toLocaleTimeString())
+  console.log("Reminder will trigger at:",new Date(reminderTime).toLocaleTimeString())
+
+  const delay = reminderTime - Date.now()
+  console.log("Delay (minutes):",Math.round(delay / 60000))
+
+  // const delay = 5000
 
   if (delay <= 0) return
 
-  console.log(`Sending reminder to service worker for task ${task.id}`)
+  console.log(`Sending reminder to service worker for task ${task.title}`)
 
   const registration = await navigator.serviceWorker.ready
 
@@ -36,6 +44,7 @@ export const scheduleReminder = async (task: ReminderTask) => {
       id: task.id,
       title: task.title,
       delay,
+      minutes: task.reminderOffsetMinutes
     }
   })
 }

@@ -3,7 +3,8 @@ export interface Task {
   title: string
   description: string
   dueDate: Date
-  reminderTime: string
+  taskScheduledTime: string
+  reminderOffsetMinutes: number
   priority: "low" | "medium" | "high"
   category: string
   completed: boolean
@@ -14,7 +15,8 @@ export type TaskInput = {
   title: string
   description: string
   dueDate: Date
-  reminderTime: string
+  taskScheduledTime: string
+  reminderOffsetMinutes: number
   priority: "low" | "medium" | "high"
   category: string
   completed: boolean

@@ -11,7 +11,8 @@ export async function createTaskAction(data: TaskInput) {
         title: data.title,
         description: data.description,
         dueDate: data.dueDate,
-        reminderTime: data.reminderTime,
+        taskScheduledTime: data.taskScheduledTime,
+        reminderOffsetMinutes: data.reminderOffsetMinutes,
         priority: data.priority,
         category: data.category,
         completed: data.completed ?? false
@@ -52,7 +53,8 @@ export async function updateTaskAction(data: TaskInput & { id: number }) {
         title: data.title,
         description: data.description,
         dueDate: data.dueDate,
-        reminderTime: data.reminderTime,
+        taskScheduledTime: data.taskScheduledTime,
+        reminderOffsetMinutes: data.reminderOffsetMinutes,
         priority: data.priority,
         category: data.category,
         completed: data.completed

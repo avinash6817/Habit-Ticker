@@ -40,10 +40,22 @@ export default function TaskCreateModal({
   const [selectedMinute, setSelectedMinute] = useState(0)
   const [period, setPeriod] = useState<"AM" | "PM">("AM")
 
-  const [reminderTime, setReminderTime] = useState("09:00 AM")
+  const [taskScheduledTime, setTaskScheduledTime] = useState("09:00 AM")
+  const [reminderOffsetMinutes, setReminderOffsetMinutes] = useState(5)
+
+  // const [reminderTime, setReminderTime] = useState("09:00 AM")
 
   const [isDateOpen, setIsDateOpen] = useState(false)
   const [isTimeOpen, setIsTimeOpen] = useState(false)
+
+  const reminderOptions = [
+    { label: "5 min before", value: 5 },
+    { label: "10 min before", value: 10 },
+    { label: "15 min before", value: 15 },
+    { label: "30 min before", value: 30 },
+    { label: "1 hr before", value: 60 },
+    { label: "1 day before", value: 1440 }
+  ]
 
   /* Keep reminderTime synced */
   useEffect(() => {
@@ -51,7 +63,7 @@ export default function TaskCreateModal({
       `${String(selectedHour).padStart(2, "0")}:` +
       `${String(selectedMinute).padStart(2, "0")} ${period}`
 
-    setReminderTime(formatted)
+    setTaskScheduledTime(formatted)
   }, [selectedHour, selectedMinute, period])
 
   useEffect(() => {
@@ -69,7 +81,8 @@ export default function TaskCreateModal({
       setPriority(editingTask.priority)
       setCategory(editingTask.category)
       setCompleted(editingTask.completed)
-      setReminderTime(editingTask.reminderTime)
+      setTaskScheduledTime(editingTask.taskScheduledTime)
+      setReminderOffsetMinutes(editingTask.reminderOffsetMinutes)
     }
   }, [editingTask, isOpen])
 
@@ -105,7 +118,8 @@ export default function TaskCreateModal({
       title,
       description,
       dueDate,
-      reminderTime,
+      taskScheduledTime,
+      reminderOffsetMinutes,
       priority,
       category,
       completed
@@ -171,13 +185,13 @@ export default function TaskCreateModal({
             />
 
             {/* Description */}
-            <textarea
-              maxLength={120}
-              placeholder="Description (max 120 chars)"
+            {/* <textarea
+              maxLength={30}
+              placeholder="Description (max 50 chars)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="bg-[#1F2937] h-24 resize-none p-4 rounded-xl text-white outline-none focus:ring-2 focus:ring-green-500"
-            />
+              className="bg-[#1F2937] h-14 resize-none px-4 py-2 rounded-xl text-white outline-none focus:ring-2 focus:ring-green-500"
+            /> */}
 
             {/* Due Date */}
             <div>
@@ -197,10 +211,10 @@ export default function TaskCreateModal({
               </button>
             </div>
 
-            {/* Reminder Button */}
+            {/* Task Schedule Time */}
             <div>
               <label className="text-xs text-gray-400 mb-2 block">
-                Reminder Time
+                Task Schedule Time
               </label>
 
               <button
@@ -209,10 +223,34 @@ export default function TaskCreateModal({
               >
                 <div className="flex items-center gap-2">
                   <Clock size={16} />
-                  {reminderTime}
+                  {taskScheduledTime}
                 </div>
                 <ChevronDown size={16} />
               </button>
+            </div>
+
+
+            {/* Reminder Offset */}
+            <div>
+              <label className="text-xs text-gray-400 mb-2 block">
+                Remind Me
+              </label>
+
+             <div className="flex gap-2 overflow-x-auto no-scrollbar ">
+                {reminderOptions.map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setReminderOffsetMinutes(opt.value)}
+                    className={`p-2 rounded-lg text-xs border whitespace-nowrap ${
+                      reminderOffsetMinutes === opt.value
+                        ? "bg-green-500/20 text-green-400 border-green-500/30"
+                        : "bg-[#1F2937] text-gray-400 border-gray-700"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Priority */}
@@ -226,7 +264,7 @@ export default function TaskCreateModal({
                   <button
                     key={level}
                     onClick={() => setPriority(level)}
-                    className={`px-3 py-2 rounded-xl border text-sm transition ${
+                    className={`px-3 py-2 rounded-lg border text-xs transition ${
                       priority === level
                         ? priorityStyles[level]
                         : "border-gray-700 text-gray-400"
@@ -249,7 +287,7 @@ export default function TaskCreateModal({
                   <button
                     key={cat}
                     onClick={() => setCategory(cat)}
-                    className={`px-3 py-2 rounded-xl text-sm transition border ${
+                    className={`px-3 py-2 rounded-lg text-xs transition border ${
                       category === cat
                         ? "bg-green-500/20 text-green-400 border-green-500/30"
                         : "bg-[#1F2937] text-gray-400 border-gray-700"
