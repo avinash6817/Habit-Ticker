@@ -35,12 +35,17 @@ export default function DateScroller({
     }
   }, [])
 
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, "0")
-    const day = String(date.getDate()).padStart(2, "0")
+  // const formatDate = (date: Date) => {
+  //   const year = date.getFullYear()
+  //   const month = String(date.getMonth() + 1).padStart(2, "0")
+  //   const day = String(date.getDate()).padStart(2, "0")
 
-    return `${year}-${month}-${day}`
+  //   return `${year}-${month}-${day}`
+  // }
+
+  const formatDate = (date: Date) => {
+    const d = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    return d.toISOString().slice(0, 10)
   }
 
   const todayDateObj = new Date()

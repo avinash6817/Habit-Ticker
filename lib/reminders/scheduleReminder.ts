@@ -21,8 +21,8 @@ export const scheduleReminder = async (task: ReminderTask) => {
 
   dueDate.setHours(hours, minutes, 0, 0)
 
-  const delay = dueDate.getTime() - Date.now()
-  // const delay = 5000
+  // const delay = dueDate.getTime() - Date.now()
+  const delay = 5000
 
   if (delay <= 0) return
 

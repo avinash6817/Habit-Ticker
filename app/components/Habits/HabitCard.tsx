@@ -60,8 +60,14 @@ export default function HabitCard({
   //   return `${year}-${month}-${day}`
   // }
 
+  // const formatDate = (date: Date) => {
+  //   return date.toISOString().split("T")[0]
+  // }
+
+
   const formatDate = (date: Date) => {
-    return date.toISOString().split("T")[0]
+    const d = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    return d.toISOString().slice(0, 10)
   }
 
   const isBeforeCreation = selectedDate < habit.createdAt
