@@ -7,7 +7,7 @@ type ReminderTask = {
 }
 
 export const scheduleReminder = async (task: ReminderTask) => {
-  if (typeof window === "undefined") return
+  // if (typeof window === "undefined") return
   if (!("serviceWorker" in navigator)) return
   if (Notification.permission !== "granted") return
   if (!task.taskScheduledTime) return
@@ -27,10 +27,10 @@ export const scheduleReminder = async (task: ReminderTask) => {
   console.log("Task time:", dueDate.toLocaleTimeString())
   console.log("Reminder will trigger at:",new Date(reminderTime).toLocaleTimeString())
 
-  const delay = reminderTime - Date.now()
-  console.log("Delay (minutes):",Math.round(delay / 60000))
+  // const delay = reminderTime - Date.now()
+  // console.log("Delay (minutes):",Math.round(delay / 60000))
 
-  // const delay = 5000
+  const delay = 5000
 
   if (delay <= 0) return
 
