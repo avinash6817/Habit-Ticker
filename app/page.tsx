@@ -10,7 +10,7 @@ import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-ki
 
 import { Habit } from "./types/habit"
 import { Task } from "./types/task"
-import { scheduleReminder } from "@/lib/reminders/scheduleReminder"
+// import { scheduleReminder } from "@/lib/reminders/scheduleReminder"
 
 import { getTasksAction } from "./actions/task"
 
@@ -37,6 +37,10 @@ import {  getHabitsAction,
 from "./actions/habit"
 
 export default function Home() {
+
+  // useEffect(() => {
+  //   subscribeUser()
+  // }, [])
 
   useEffect(() => {
     const loadHabits = async () => {
@@ -99,9 +103,9 @@ export default function Home() {
 
         setTasks(formattedTasks)
 
-        formattedTasks.forEach((task) => {
-          scheduleReminder(task)
-        })
+        // formattedTasks.forEach((task) => {
+        //   scheduleReminder(task)
+        // })
       }
       catch (error) {
         console.error("Failed to load tasks:", error)
@@ -530,6 +534,7 @@ export default function Home() {
         activeScreen={activeScreen}
         setActiveScreen={setActiveScreen}
       />  
+
 
     </main>
   )

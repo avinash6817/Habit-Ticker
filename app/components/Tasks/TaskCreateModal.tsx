@@ -7,7 +7,7 @@ import { X, CalendarDays, ChevronDown, Check, Clock } from "lucide-react"
 import DatePicker from "../DatePicker"
 
 import { TaskInput } from "@/app/types/task"
-import { scheduleReminder } from "@/lib/reminders/scheduleReminder"
+// import { scheduleReminder } from "@/lib/reminders/scheduleReminder"
 
 import { updateTaskAction } from "@/app/actions/task"
 
@@ -49,6 +49,7 @@ export default function TaskCreateModal({
   const [isTimeOpen, setIsTimeOpen] = useState(false)
 
   const reminderOptions = [
+    { label: "1 min before", value: 1 },
     { label: "5 min before", value: 5 },
     { label: "10 min before", value: 10 },
     { label: "15 min before", value: 15 },
@@ -133,7 +134,7 @@ export default function TaskCreateModal({
       })
 
       onUpdate(updatedTask)
-      await scheduleReminder(updatedTask)
+      // await scheduleReminder(updatedTask)
     } 
     else {
       onCreate(taskData)

@@ -28,6 +28,37 @@ self.addEventListener("activate", (event) => {
 })
 
 
+self.addEventListener("push", (event) => {
+
+  console.log("Push event received")
+
+  let data = {}
+
+  if (event.data) {
+    try {
+      data = event.data.json()
+    } catch {
+      data = {
+        title: "Reminder",
+        body: event.data.text()
+      }
+    }
+  }
+
+  const title = data.title || "Reminder"
+  const body = data.body || "You have a task reminder"
+
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon: "/Hab-Icon-192.png",
+      badge: "/Hab-Icon-72.png",
+      tag: data.tag || "task-reminder"
+    })
+  )
+})
+
+
 self.addEventListener("notificationclick", (event) => {
   event.notification.close()
 

@@ -11,8 +11,8 @@ import ScheduleTaskCard from "./ScheduleTaskCard"
 import ConfirmActionModal from "../ConfirmActionModal"
 
 import { Task, TaskInput } from "@/app/types/task"
-import { scheduleReminder } from "@/lib/reminders/scheduleReminder"
-import { cancelReminder } from "@/lib/reminders/cancelReminder"
+// import { scheduleReminder } from "@/lib/reminders/scheduleReminder"
+// import { cancelReminder } from "@/lib/reminders/cancelReminder"
 import { playCompleteSound } from "@/lib/sound/playSound"
 
 import { createTaskAction, deleteTaskAction, toggleTaskCompletionAction } from "@/app/actions/task"
@@ -48,7 +48,7 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
 
     setTasks(prev => [...prev, task])
 
-    scheduleReminder(task)
+    // scheduleReminder(task)
   }
 
   const handleUpdateTask = (updatedTask: Task) => {
@@ -70,7 +70,7 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
     try {
       await deleteTaskAction(taskToDelete.id)
 
-      await cancelReminder(taskToDelete.id)
+      // await cancelReminder(taskToDelete.id)
 
       setTasks(prev =>
         prev.filter(task => task.id !== taskToDelete.id)
