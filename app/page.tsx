@@ -10,7 +10,7 @@ import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-ki
 
 import { Habit } from "./types/habit"
 import { Task } from "./types/task"
-// import { scheduleReminder } from "@/lib/reminders/scheduleReminder"
+import { toLocalDateString } from "@/lib/date"
 
 import { getTasksAction } from "./actions/task"
 
@@ -37,10 +37,6 @@ import {  getHabitsAction,
 from "./actions/habit"
 
 export default function Home() {
-
-  // useEffect(() => {
-  //   subscribeUser()
-  // }, [])
 
   useEffect(() => {
     const loadHabits = async () => {
@@ -120,20 +116,7 @@ export default function Home() {
 
   const today = new Date()
 
-  // const formatDate = (date: Date) => {
-  //   const year = date.getFullYear()
-  //   const month = String(date.getMonth() + 1).padStart(2, "0")
-  //   const day = String(date.getDate()).padStart(2, "0")
-
-  //   return `${year}-${month}-${day}`
-  // }
-
-  const formatDate = (date: Date) => {
-    const d = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-    return d.toISOString().slice(0, 10)
-  }
-
-  const [selectedDate, setSelectedDate] = useState(formatDate(today))
+  const [selectedDate, setSelectedDate] = useState(toLocalDateString(today))
   const [open, setOpen] = useState(false)
   const [habits, setHabits] = useState<Habit[]>([])
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null)

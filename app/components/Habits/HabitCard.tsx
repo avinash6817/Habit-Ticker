@@ -137,7 +137,8 @@ export default function HabitCard({
       if (toLocalDateString(prev) === toLocalDateString(curr)) {
         currentStreak++
         maxStreak = Math.max(maxStreak, currentStreak)
-      } else {
+      } 
+      else {
         currentStreak = 1
       }
     }
@@ -190,7 +191,7 @@ export default function HabitCard({
             <IconComponent size={18} />
           </div>
 
-            <h2 className="text-base font-semibold">
+            <h2 className="text-base font-semibold capitalize">
               {habit.name}
             </h2>
         </div>
