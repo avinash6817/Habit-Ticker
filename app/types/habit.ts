@@ -1,9 +1,15 @@
 export interface Habit {
   id: number
   name: string
-  completions: string[]
-  icon: string
   color: string
-  createdAt: string
+  icon: string
   order: number
+  createdAt: string
+
+  completions?: string[]
+
+  logs?: {
+    date: string
+    completed: boolean
+  }[]
 }

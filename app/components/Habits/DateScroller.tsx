@@ -3,13 +3,9 @@
 "use client"
 
 import { useEffect, useRef } from "react"
+import { toLocalDateString } from "@/lib/date"
 
-interface Habit {
-  id: number
-  name: string
-  completions: string[]
-  createdAt: string
-}
+import { Habit } from "@/app/types/habit"
 
 interface DateScrollerProps {
   habits: Habit[]
@@ -35,23 +31,9 @@ export default function DateScroller({
     }
   }, [])
 
-  // const formatDate = (date: Date) => {
-  //   const year = date.getFullYear()
-  //   const month = String(date.getMonth() + 1).padStart(2, "0")
-  //   const day = String(date.getDate()).padStart(2, "0")
-
-  //   return `${year}-${month}-${day}`
-  // }
-
-  const formatDate = (date: Date) => {
-    const d = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-    return d.toISOString().slice(0, 10)
-  }
-
   const todayDateObj = new Date()
-  const today = formatDate(todayDateObj)
+  const today = toLocalDateString(todayDateObj)
 
-  // Generate all days of current month
   const generateCurrentMonthDays = () => {
     const days: string[] = []
 
@@ -66,7 +48,7 @@ export default function DateScroller({
 
     for (let day = 1; day <= daysInMonth; day++) {
       const dateObj = new Date(currentYear, currentMonth, day)
-      days.push(formatDate(dateObj))
+      days.push(toLocalDateString(dateObj))
     }
 
     return days
@@ -80,19 +62,25 @@ export default function DateScroller({
         
       // Only habits that existed on this day (string comparison)
         const validHabits = habits.filter(
-          (habit) => habit.createdAt <= day
+          (habit) => toLocalDateString(new Date(habit.createdAt)) <= day
         )
 
         const totalHabits = validHabits.length
 
-        const completedCount = validHabits.filter((habit) =>
-          habit.completions.includes(day)
-        ).length
+        const completedCount = validHabits.filter((habit) => {
+          const completions =
+            habit.completions ??
+            habit.logs
+              ?.filter((log) => log.completed)
+              .map((log) => toLocalDateString(new Date(log.date))) ?? []
+
+          return completions.includes(day)
+        }).length
 
         const ratio = totalHabits === 0 ? 0 : completedCount / totalHabits
 
         const isToday = day === today
-        const isFuture = day > today   // ✅ FIXED (string comparison)
+        const isFuture = day > today 
         const isFull = ratio === 1
 
         return (

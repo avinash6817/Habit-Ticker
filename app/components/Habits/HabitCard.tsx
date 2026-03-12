@@ -3,6 +3,8 @@
 
 import { useState } from "react"
 import { Check, MoreVertical, Pencil, Trash2, Archive,Trophy, Sparkles } from "lucide-react"
+import { toLocalDateString } from "@/lib/date"
+
 
 import { Habit } from "@/app/types/habit"
 import { playCompleteSound } from "@/lib/sound/playSound"
@@ -21,7 +23,6 @@ interface HabitCardProps {
   selectedDate: string
   setHabit: any
 
-  // ✅ NEW (only addition)
   onEdit: (habit: Habit) => void
   onDelete: (habit: Habit) => void
   onArchive: (habit: Habit) => void
@@ -51,25 +52,13 @@ export default function HabitCard({
   }
 
   const [menuOpen, setMenuOpen] = useState(false)
-  const completions = habit.completions ?? []
 
-  // const formatDate = (date: Date) => {
-  //   const year = date.getFullYear()
-  //   const month = String(date.getMonth() + 1).padStart(2, "0")
-  //   const day = String(date.getDate()).padStart(2, "0")
-
-  //   return `${year}-${month}-${day}`
-  // }
-
-  // const formatDate = (date: Date) => {
-  //   return date.toISOString().split("T")[0]
-  // }
+  const completions = habit.completions ??
+    habit.logs
+    ?.filter((log) => log.completed)
+    .map((log) => toLocalDateString(new Date(log.date))) ?? []
 
 
-  const formatDate = (date: Date) => {
-    const d = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-    return d.toISOString().slice(0, 10)
-  }
 
   const isBeforeCreation = selectedDate < habit.createdAt
 
@@ -82,12 +71,12 @@ export default function HabitCard({
     let updatedCompletions
 
     if (exists) {
-      updatedCompletions = habit.completions.filter(
+      updatedCompletions = completions.filter(
         (d) => d !== selectedDate
       )
     } 
     else {
-      updatedCompletions = [...habit.completions, selectedDate]
+      updatedCompletions = [...completions, selectedDate]
     }
 
     const unique = Array.from(new Set(updatedCompletions))
@@ -115,7 +104,7 @@ export default function HabitCard({
     let current = new Date()
 
     while (true) {
-      const dateStr = formatDate(current)
+      const dateStr = toLocalDateString(current)
 
       if (completions.includes(dateStr)) {
         streak++
@@ -145,7 +134,7 @@ export default function HabitCard({
 
       prev.setDate(prev.getDate() + 1)
 
-      if (formatDate(prev) === formatDate(curr)) {
+      if (toLocalDateString(prev) === toLocalDateString(curr)) {
         currentStreak++
         maxStreak = Math.max(maxStreak, currentStreak)
       } else {
@@ -164,7 +153,7 @@ export default function HabitCard({
     const current = new Date()
 
     for (let i = 0; i < 100; i++) {
-      const dateStr = formatDate(current)
+      const dateStr = toLocalDateString(current)
       days.push(dateStr)
       current.setDate(current.getDate() - 1)
     }
