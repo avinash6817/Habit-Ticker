@@ -90,7 +90,7 @@ export default function ArchiveScreen({
                           </p>
 
                           <p className="text-xs text-gray-400">
-                            {habit.completions.length} completions
+                            {(habit.completions ?? []).length} completions
                           </p>
                         </div>
                       </div>
