@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/prisma"
 import { sendPush } from "@/lib/sendPush"
 
+
 export async function GET(req: Request) {
+  console.log("Auth header:", req.headers.get("Authorization"))
 
   // 🔒 Protect cron endpoint
-  const authHeader = req.headers.get("authorization")
+  const authHeader = req.headers.get("Authorization")
 
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response("Unauthorized", { status: 401 })
