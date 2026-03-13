@@ -300,7 +300,7 @@ export default function Home() {
             strategy={verticalListSortingStrategy}
           >
             {loading ? (
-              <div className="flex flex-col gap-5 px-2 pt-40">
+              <div className="flex flex-col gap-5 pt-40">
                 {[...Array(3)].map((_, i) => (
                   <div
                     key={i}
@@ -310,12 +310,12 @@ export default function Home() {
                     <div className="flex items-center justify-between mb-6">
                       
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-gray-700" />
+                        <div className="w-8 h-8 rounded-xl bg-gray-700" />
                         <div className="h-5 w-32 bg-gray-700 rounded" />
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gray-700" />
+                        <div className="w-8 h-8 rounded-xl bg-gray-700" />
                         <div className="w-6 h-6 rounded bg-gray-700" />
                       </div>
 
@@ -353,7 +353,7 @@ export default function Home() {
                 </p>
               </div>
             ) : (
-              <div className="flex flex-col gap-5 min-h-[calc(100vh)] px-2 pt-40 pb-30">
+              <div className="flex flex-col gap-5 min-h-[calc(100vh)] pt-40 pb-30">
                 {habits.map((habit) => (
                   <HabitCard
                     key={habit.id}

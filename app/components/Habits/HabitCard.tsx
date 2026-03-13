@@ -203,7 +203,7 @@ export default function HabitCard({
           <button
             onClick={toggleComplete}
             className={`
-              w-10 h-10 rounded-xl flex items-center justify-center
+              w-8 h-8 rounded-lg flex items-center justify-center
               transition
               ${isBeforeCreation ? "opacity-40 cursor-not-allowed" : ""}
               ${

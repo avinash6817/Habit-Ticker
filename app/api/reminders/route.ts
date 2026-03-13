@@ -1,7 +1,14 @@
 import { prisma } from "@/lib/prisma"
 import { sendPush } from "@/lib/sendPush"
 
-export async function GET() {
+export async function GET(req: Request) {
+
+  // 🔒 Protect cron endpoint
+  const authHeader = req.headers.get("authorization")
+
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return new Response("Unauthorized", { status: 401 })
+  }
 
   console.log("Cron running:", new Date())
 
@@ -36,7 +43,7 @@ export async function GET() {
     console.log("AlreadySent:", alreadySent)
 
     if (now >= reminderDate && !alreadySent) {
-       console.log("Triggering reminder for:", task.title)
+      console.log("Triggering reminder for:", task.title)
 
       await sendPush(
         "Task Reminder",
@@ -53,5 +60,4 @@ export async function GET() {
   }
 
   return Response.json({ checked: true })
-
 }
