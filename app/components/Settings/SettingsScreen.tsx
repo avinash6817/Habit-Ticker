@@ -3,19 +3,20 @@
 import { useState, useEffect } from "react"
 import { ArrowLeft, ChevronRight, Archive, Bell } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+
+import ArchiveScreen from "./ArchiveScreen"
+import RemindersScreen from "./ReminderScreen"
 import Footer from "./Footer"
 
 type SettingsScreenProps = {
   isOpen: boolean
   onClose: () => void
-  onOpenArchive: () => void
   archivedCount: number
 }
 
 export default function SettingsScreen({
   isOpen,
   onClose,
-  onOpenArchive,
   archivedCount
 }: SettingsScreenProps) {
 
@@ -128,19 +129,17 @@ export default function SettingsScreen({
           )}
 
 
-          {/* ARCHIVE VIEW (placeholder for now) */}
           {settingsView === "archive" && (
-            <div className="flex-1 flex items-center justify-center text-gray-400">
-              Archive Screen
-            </div>
+            <ArchiveScreen
+              onClose={() => setSettingsView("main")}
+            />
           )}
 
 
-          {/* REMINDERS VIEW (placeholder) */}
           {settingsView === "reminders" && (
-            <div className="flex-1 flex items-center justify-center text-gray-400">
-              Reminders Screen
-            </div>
+            <RemindersScreen
+              onClose={() => setSettingsView("main")}
+            />
           )}
 
 

@@ -1,35 +1,41 @@
-
 export async function subscribeUser() {
   if (!("serviceWorker" in navigator)) {
-    console.log("Service workers not supported")
-    return
+    return { success: false, message: "Service workers not supported" }
   }
 
-  const registration = await navigator.serviceWorker.ready
+  try {
+    const registration = await navigator.serviceWorker.ready
 
-  const permission = await Notification.requestPermission()
+    const permission = await Notification.requestPermission()
 
-  if (permission !== "granted") {
-    console.log("Notification permission denied")
-    return
-  }
-
-  const subscription = await registration.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(
-      process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
-    )
-  })
-
-  await fetch("/api/subscribe", {
-    method: "POST",
-    body: JSON.stringify(subscription),
-    headers: {
-      "Content-Type": "application/json"
+    if (permission !== "granted") {
+      return { success: false, message: "Notification permission denied" }
     }
-  })
 
-  console.log("Push subscription stored")
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(
+        process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
+      )
+    })
+
+    await fetch("/api/subscribe", {
+      method: "POST",
+      body: JSON.stringify(subscription),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+
+    console.log("Push subscription stored")
+
+    return { success: true, message: "Notifications enabled successfully" }
+
+  } 
+  catch (error) {
+    console.error("Subscription failed:", error)
+    return { success: false, message: "Subscription failed" }
+  }
 }
 
 

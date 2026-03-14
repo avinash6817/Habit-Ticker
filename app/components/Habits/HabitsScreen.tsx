@@ -1,18 +1,16 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 
 import HabitDateScroller from "./HabitDateScroller"
 import HabitCard from "./HabitCard"
 import HabitModal from "./HabitModal"
-import ArchiveScreen from "../Settings/ArchiveScreen"
 import HabitCreateButton from "./HabitCreateButton"
 
 import { DndContext, closestCenter,MouseSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core"
 import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable"
 
-import { ArchiveRestore, PlusCircle } from "lucide-react"
-import { AlertTriangle } from "lucide-react"
+import { PlusCircle,AlertTriangle } from "lucide-react"
 
 import ConfirmActionModal from "../ConfirmActionModal"
 
@@ -22,7 +20,6 @@ import { Habit } from "@/app/types/habit"
 import {    updateHabitOrderAction, 
             deleteHabitAction, 
             archiveHabitAction, 
-            restoreHabitAction 
         } 
 from "@/app/actions/habit"
 
@@ -35,8 +32,6 @@ type HabitsScreenProps = {
     selectedDate: string
     setSelectedDate: (date: string) => void
     loading: boolean
-    archiveOpen: boolean
-    setArchiveOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default function HabitsScreen({
@@ -46,15 +41,11 @@ export default function HabitsScreen({
     setArchivedHabits,
     selectedDate,
     setSelectedDate,
-    loading,
-    archiveOpen,
-    setArchiveOpen
+    loading
 }: HabitsScreenProps) {
     const [open, setOpen] = useState(false)
     const [editingHabit, setEditingHabit] = useState<Habit | null>(null)
     const [deletingHabit, setDeletingHabit] = useState<Habit | null>(null)
-    const [restoringHabit, setRestoringHabit] = useState<Habit | null>(null)
-    const [deletingArchivedHabit, setDeletingArchivedHabit] = useState<Habit | null>(null)
     const [archivingHabit, setArchivingHabit] = useState<Habit | null>(null)
 
 
@@ -83,7 +74,6 @@ export default function HabitsScreen({
             setHabits(previous)
         }
     }
-
 
     const handleArchiveHabit = async (habit: Habit) => {
         console.log("ARCHIVE HABIT BEFORE : ", habit)
@@ -115,53 +105,6 @@ export default function HabitsScreen({
         }
 
         console.log("ARCHIVE HABIT AFTER : ", habit)
-    }
-
-    const handleRestoreHabit = async (habit: Habit) => {
-        const previousHabits = habits
-        const previousArchived = archivedHabits
-
-        // Optimistic update
-        setArchivedHabits(prev => prev.filter(h => h.id !== habit.id))
-
-        setHabits(prev => {
-            const restoredHabit = {
-                ...habit,
-                isArchived: false, 
-                // normalize completions
-                // completions: habit.logs?.map(l => toLocalDateString(new Date(l.date))) ?? []
-                completions: habit.completions ?? []
-            }
-
-            const updated = [...prev, restoredHabit]
-            return updated.sort((a, b) => a.order - b.order)
-        })
-
-        try {
-            await restoreHabitAction(habit.id)
-        } 
-        catch (error) {
-            console.error("Restore failed:", error)
-            // Rollback
-            setArchivedHabits(previousArchived)
-            setHabits(previousHabits)
-        }
-    }
-
-    const handleDeleteArchivedHabit = async (habitId: number) => {
-        const previous = archivedHabits
-
-        setArchivedHabits(prev =>
-        prev.filter(h => h.id !== habitId)
-        )
-
-        try {
-            await deleteHabitAction(habitId)
-        } 
-        catch (error) {
-            console.error("Delete failed:", error)
-            setArchivedHabits(previous)
-        }
     }
 
     const sensors = useSensors(
@@ -366,68 +309,6 @@ export default function HabitsScreen({
                 }}
             />
 
-
-            <ArchiveScreen
-                isOpen={archiveOpen}
-                onClose={() => setArchiveOpen(false)}
-                archivedHabits={archivedHabits}
-                onRestore={(habit) => setRestoringHabit(habit)}
-                onDelete={(habit) => setDeletingArchivedHabit(habit)}
-            />
-
-
-            <ConfirmActionModal
-                isOpen={!!restoringHabit}
-                onClose={() => setRestoringHabit(null)}
-                onConfirm={() => {
-                    if (restoringHabit) {
-                    handleRestoreHabit(restoringHabit)
-                    setRestoringHabit(null)
-                    }
-                }}
-                title="Restore Habit ?"
-                description={
-                    <>
-                    The habit{" "}
-                    {restoringHabit && (
-                        <span className="font-semibold text-white capitalize">
-                        {restoringHabit.name}
-                        </span>
-                    )}{" "}
-                    will be restored along with its completion and streak data.
-                    </>
-                }
-                confirmText="Restore"
-                confirmColor="green"
-                icon={<ArchiveRestore size={22} />}
-            />
-
-
-
-            <ConfirmActionModal
-                isOpen={!!deletingArchivedHabit}
-                onClose={() => setDeletingArchivedHabit(null)}
-                onConfirm={() => {
-                    if (deletingArchivedHabit) {
-                        handleDeleteArchivedHabit(deletingArchivedHabit.id)
-                        setDeletingArchivedHabit(null)
-                    }
-                }}
-                title="Delete Archived Habit ?"
-                description={
-                    <>
-                    This action is irreversible. You will permanently lose your streak data for archived habit{" "}
-                    {deletingArchivedHabit && (
-                        <span className="font-semibold text-white capitalize">
-                        {deletingArchivedHabit.name}
-                        </span>
-                    )}{" "}
-                    </>
-                }
-                confirmText="Delete"
-                confirmColor="red"
-                icon={<AlertTriangle size={22} />}
-            />
 
             <ConfirmActionModal
                 isOpen={!!archivingHabit}

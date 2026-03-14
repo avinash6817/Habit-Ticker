@@ -8,36 +8,35 @@ import { Habit } from "./types/habit"
 import { Task } from "./types/task"
 import { toLocalDateString } from "@/lib/date"
 
-import { getTasksAction } from "./actions/task"
-
 import Header from "./components/Header"
 import HabitsScreen from "./components/Habits/HabitsScreen"
 import SettingsScreen from "./components/Settings/SettingsScreen"
 import TasksScreen from "./components/Tasks/TasksScreen"
 import BottomSwitcher from "./components/BottomSwitcher"
 
+// import { HabitContext } from "./context/HabitContext"
+import { HabitProvider } from "@/app/context/HabitContext"
+
 
 // Importing Server Functions
-import {  getHabitsAction, 
-          getArchivedHabitsAction
-        } 
-from "./actions/habit"
+import {  getHabitsAction, getArchivedHabitsAction} from "./actions/habit"
+import { getTasksAction } from "./actions/task"
+
 
 export default function Home() {
-    const today = new Date()
+  const today = new Date()
 
-    const [selectedDate, setSelectedDate] = useState(toLocalDateString(today))
-    const [habits, setHabits] = useState<Habit[]>([])
-    const [archivedHabits, setArchivedHabits] = useState<Habit[]>([])
+  const [selectedDate, setSelectedDate] = useState(toLocalDateString(today))
+  const [habits, setHabits] = useState<Habit[]>([])
+  const [archivedHabits, setArchivedHabits] = useState<Habit[]>([])
 
-    const [settingsOpen, setSettingsOpen] = useState(false)
-    const [archiveOpen, setArchiveOpen] = useState(false)
-    const [loading, setLoading] = useState(true)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-    const [activeScreen, setActiveScreen] = useState<"habits" | "tasks">("habits")
+  const [activeScreen, setActiveScreen] = useState<"habits" | "tasks">("habits")
 
-    const [tasks, setTasks] = useState<Task[]>([])
-    const [tasksLoading, setTasksLoading] = useState(true)
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [tasksLoading, setTasksLoading] = useState(true)
 
   useEffect(() => {
     console.log("🌟 Global habits state changed:", habits)
@@ -161,58 +160,70 @@ export default function Home() {
 
 
   return (
-    <main
-        className="min-h-screen bg-[#0B0F1A] text-white px-4 max-w-[1024px] mx-auto"
-        style={{ ["--primary-color" as any]: "#22c55e" }}
-      > 
+     <HabitProvider
+        habits={habits}
+        setHabits={setHabits}
+        archivedHabits={archivedHabits}
+        setArchivedHabits={setArchivedHabits}
+        tasks={tasks}
+        setTasks={setTasks}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        loading={loading}
+        tasksLoading={tasksLoading}
+      >
+          <main
+              className="min-h-screen bg-[#0B0F1A] text-white px-4 max-w-[1024px] mx-auto"
+              style={{ ["--primary-color" as any]: "#22c55e" }}
+            > 
 
-        {/* Header */}
-        <div className="fixed top-0 left-0 right-0 z-40 bg-[#0B0F1A] max-w-[1024px] mx-auto px-4">
-          <Header
-            onOpenSettings={() => setSettingsOpen(true)}
-          />
-        </div>
+              {/* Header */}
+              <div className="fixed top-0 left-0 right-0 z-40 bg-[#0B0F1A] max-w-[1024px] mx-auto px-4">
+                <Header
+                  onOpenSettings={() => setSettingsOpen(true)}
+                />
+              </div>
 
-        {/* Habit Screen */}
-        {activeScreen === "habits" && (
-          <HabitsScreen
-            habits={habits}
-            setHabits={setHabits}
-            archivedHabits={archivedHabits}
-            setArchivedHabits={setArchivedHabits}
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            loading={loading}
-            archiveOpen={archiveOpen}
-            setArchiveOpen={setArchiveOpen}
-          />
-        )}
-
-
-         {/* Task Screen */}
-        {activeScreen === "tasks" && (
-          <TasksScreen
-            tasks={tasks}
-            setTasks={setTasks}
-            loading={tasksLoading}
-        />)}
-
-
-      {/* SettingsScreen Component */}
-      <SettingsScreen
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        onOpenArchive={() => setArchiveOpen(true)}
-        archivedCount={archivedHabits.length}
-      />
+              {/* Habit Screen */}
+              {activeScreen === "habits" && (
+                <HabitsScreen
+                  habits={habits}
+                  setHabits={setHabits}
+                  archivedHabits={archivedHabits}
+                  setArchivedHabits={setArchivedHabits}
+                  selectedDate={selectedDate}
+                  setSelectedDate={setSelectedDate}
+                  loading={loading}
+                />
+              )}
 
 
-      <BottomSwitcher
-        activeScreen={activeScreen}
-        setActiveScreen={setActiveScreen}
-      />  
+              {/* Task Screen */}
+              {activeScreen === "tasks" && (
+                <TasksScreen
+                  tasks={tasks}
+                  setTasks={setTasks}
+                  loading={tasksLoading}
+              />)}
 
 
-    </main>
+            {/* SettingsScreen Component */}
+            <SettingsScreen
+              isOpen={settingsOpen}
+              onClose={() => setSettingsOpen(false)}
+              archivedCount={archivedHabits.length}
+            />
+
+
+            <BottomSwitcher
+              activeScreen={activeScreen}
+              setActiveScreen={setActiveScreen}
+            />  
+
+
+          </main>
+
+      </HabitProvider>
+
   )
 }
