@@ -37,6 +37,7 @@ export async function getHabitsAction() {
     name: habit.name,
     color: habit.color,
     icon: habit.icon,
+    isArchived: habit.isArchived,
     order: habit.order,
 
     createdAt: habit.createdAt, // raw timestamp
@@ -55,30 +56,19 @@ export async function getArchivedHabitsAction() {
     orderBy: { order: "asc" },
   })
 
-  return habits.map((habit) => {
-    // ✅ normalize createdAt
-    const created = habit.createdAt
-    const year = created.getFullYear()
-    const month = String(created.getMonth() + 1).padStart(2, "0")
-    const day = String(created.getDate()).padStart(2, "0")
-
-    return {
-      id: habit.id,
-      name: habit.name,
-      color: habit.color,
-      icon: habit.icon,
-      order: habit.order,
-      createdAt: `${year}-${month}-${day}`, // ✅ FIXED
-      completions: habit.logs.map((log) => {
-        const logDate = log.date
-        const y = logDate.getFullYear()
-        const m = String(logDate.getMonth() + 1).padStart(2, "0")
-        const d = String(logDate.getDate()).padStart(2, "0")
-        
-        return `${y}-${m}-${d}`
-      }),
-    }
-  })
+  return habits.map((habit) => ({
+    id: habit.id,
+    name: habit.name,
+    color: habit.color,
+    icon: habit.icon,
+    isArchived: habit.isArchived,
+    order: habit.order,
+    createdAt: habit.createdAt, // raw timestamp
+    logs: habit.logs.map((log) => ({
+      completed: log.completed,
+      date: log.date, // raw Date object
+    })),
+  }))
 }
 
 export async function updateHabitAction(

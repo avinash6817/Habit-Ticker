@@ -34,3 +34,11 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Prevent text selection on numbers and clock */
+.clock-container, .clock-number {
+  user-select: none;           /* prevents text highlighting */
+  -webkit-user-select: none;   /* Safari */
+  -ms-user-select: none;       /* IE/Edge */
+  touch-action: none;          /* disables default touch gestures like scrolling/zooming */
+}

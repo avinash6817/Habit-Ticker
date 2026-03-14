@@ -144,11 +144,22 @@ export default function HabitModal({
 
       const formattedDate = `${year}-${month}-${day}`
 
-      onAddHabit({
+      const newHabit = {
         ...createdHabit,
         createdAt: formattedDate,
-        completions: [],
-      })
+        completions: [], // initially empty
+      }
+
+      // 🔥 LOG TO CHECK
+      // console.log("Newly Created Habit (before adding to state):", newHabit)
+
+      onAddHabit(newHabit)
+
+      // onAddHabit({
+      //   ...createdHabit,
+      //   createdAt: formattedDate,
+      //   completions: [],
+      // })
 
       handleClose()
 

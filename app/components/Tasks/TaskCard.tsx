@@ -14,7 +14,7 @@ interface Props {
   onDelete?: (task: Task) => void
 }
 
-export default function ScheduleTaskCard({ task, onEdit, onToggleComplete, onDelete}: Props) {
+export default function TaskCard({ task, onEdit, onToggleComplete, onDelete}: Props) {
   const cardRef = useRef<HTMLDivElement | null>(null)
 
   // ✅ Long press state

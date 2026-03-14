@@ -7,17 +7,17 @@ import { toLocalDateString } from "@/lib/date"
 
 import { Habit } from "@/app/types/habit"
 
-interface DateScrollerProps {
+interface HabitDateScrollerProps {
   habits: Habit[]
   selectedDate: string
   setSelectedDate: (date: string) => void
 }
 
-export default function DateScroller({
+export default function HabitDateScroller({
   habits,
   selectedDate,
   setSelectedDate,
-}: DateScrollerProps) {
+}: HabitDateScrollerProps) {
 
   const todayRef = useRef<HTMLDivElement>(null)
 

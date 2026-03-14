@@ -26,6 +26,7 @@ interface HabitCardProps {
   onEdit: (habit: Habit) => void
   onDelete: (habit: Habit) => void
   onArchive: (habit: Habit) => void
+  onUpdateHabit?: (habit: Habit) => void  // NEW
 }
 
 export default function HabitCard({
@@ -34,7 +35,8 @@ export default function HabitCard({
   setHabit,
   onEdit,
   onDelete,
-  onArchive
+  onArchive,
+  onUpdateHabit
 }: HabitCardProps) {
 
   const {
@@ -53,10 +55,13 @@ export default function HabitCard({
 
   const [menuOpen, setMenuOpen] = useState(false)
 
+  // even though log contains only the completed on we are just double checking it
   const completions = habit.completions ??
     habit.logs
     ?.filter((log) => log.completed)
     .map((log) => toLocalDateString(new Date(log.date))) ?? []
+
+  // const completions = habit.completions || []
 
 
 
@@ -80,10 +85,23 @@ export default function HabitCard({
     }
 
     const unique = Array.from(new Set(updatedCompletions))
-    // unique.sort()
     unique.sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
 
-    setHabit({ ...habit, completions: unique })
+    const updatedHabit = { ...habit, completions: unique }
+
+    setHabit(updatedHabit)
+
+    // console.log("✅ Habit after toggle:", {
+    //   habit: updatedHabit,
+    //   selectedDate,
+    // })
+
+        // Propagate to parent
+    if (onUpdateHabit) {
+      onUpdateHabit(updatedHabit)
+    }
+
+
     try {
       if (!exists) {
         playCompleteSound()

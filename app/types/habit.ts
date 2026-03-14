@@ -3,6 +3,7 @@ export interface Habit {
   name: string
   color: string
   icon: string
+  isArchived: boolean 
   order: number
   createdAt: string
 

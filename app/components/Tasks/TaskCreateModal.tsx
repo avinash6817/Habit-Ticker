@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { X, CalendarDays, ChevronDown, Check, Clock } from "lucide-react"
 import DatePicker from "../DatePicker"
 
@@ -42,8 +42,10 @@ export default function TaskCreateModal({
 
   const [taskScheduledTime, setTaskScheduledTime] = useState("09:00 AM")
   const [reminderOffsetMinutes, setReminderOffsetMinutes] = useState(5)
+  const [clockMode, setClockMode] = useState<"hour" | "minute">("hour")
 
-  // const [reminderTime, setReminderTime] = useState("09:00 AM")
+  const clockRef = useRef<HTMLDivElement>(null);
+
 
   const [isDateOpen, setIsDateOpen] = useState(false)
   const [isTimeOpen, setIsTimeOpen] = useState(false)
@@ -66,6 +68,8 @@ export default function TaskCreateModal({
 
     setTaskScheduledTime(formatted)
   }, [selectedHour, selectedMinute, period])
+
+  useEffect(() => { if(isTimeOpen) setClockMode("hour") }, [isTimeOpen])
 
   useEffect(() => {
     if (isOpen) {
@@ -157,6 +161,8 @@ export default function TaskCreateModal({
 
   const hours = Array.from({ length: 12 }, (_, i) => i + 1)
   const minutes = [0,5,10,15,20,25,30,35,40,45,50,55]
+
+  
 
   return (
     <>
@@ -344,146 +350,294 @@ export default function TaskCreateModal({
       />
 
       {/* CENTERED CLOCK OVERLAY */}
-       {isTimeOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60">
+        {/* {isTimeOpen && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60">
 
-                {/* TIME DISPLAY (moved outside clock) */}
-                <div className="absolute top-6 left-1/2 -translate-x-1/2 text-white font-semibold text-2xl">
-                    {String(selectedHour).padStart(2, "0")} : {String(selectedMinute).padStart(2, "0")} {period}
-                </div>
-                
-            <div className="relative flex flex-col items-center">
+                  <div className="absolute top-6 left-1/2 -translate-x-1/2 text-white font-semibold text-2xl">
+                      {String(selectedHour).padStart(2, "0")} : {String(selectedMinute).padStart(2, "0")} {period}
+                  </div>
+                  
+              <div className="relative flex flex-col items-center">
 
+                  <button
+                      onClick={() => setIsTimeOpen(false)}
+                      className="absolute -top-10 text-gray-400 text-sm"
+                  >
+                      Close
+                  </button>
+
+              <div
+                  className="relative w-72 h-72 rounded-full bg-[#0f172a] border border-gray-700"
+                  onPointerDown={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect()
+                    const centerX = rect.left + rect.width / 2
+                    const centerY = rect.top + rect.height / 2
+
+                    const updateHour = (clientX: number, clientY: number) => {
+                        const dx = clientX - centerX
+                        const dy = clientY - centerY
+                        let angle = Math.atan2(dy, dx) * (180 / Math.PI)
+
+                        angle = angle + 90
+                        if (angle < 0) angle += 360
+
+                        const hour = Math.round(angle / 30) % 12 || 12
+                        setSelectedHour(hour)
+
+                        if (navigator.vibrate) navigator.vibrate(5)
+                  }
+
+                  updateHour(e.clientX, e.clientY)
+
+                  const moveHandler = (moveEvent: PointerEvent) => {
+                      updateHour(moveEvent.clientX, moveEvent.clientY)
+                  }
+
+                  const upHandler = () => {
+                      window.removeEventListener("pointermove", moveHandler)
+                      window.removeEventListener("pointerup", upHandler)
+                  }
+
+                  window.addEventListener("pointermove", moveHandler)
+                  window.addEventListener("pointerup", upHandler)
+                  }}
+              >
+
+                  {hours.map((hour) => {
+                    const angle = (hour % 12) * 30
+                    const rad = (angle * Math.PI) / 180
+                    const radius = 105
+
+                    const x = radius * Math.sin(rad)
+                    const y = -radius * Math.cos(rad)
+
+                  return (
+                      <div
+                      key={hour}
+                      className={`absolute w-8 h-8 text-sm rounded-full flex items-center justify-center
+                      ${
+                          selectedHour === hour
+                          ? "text-green-400 font-semibold"
+                          : "text-gray-500"
+                      }`}
+                      style={{
+                          top: `calc(50% + ${y}px - 16px)`,
+                          left: `calc(50% + ${x}px - 16px)`
+                      }}
+                      >
+                      {hour}
+                      </div>
+                  )
+                  })}
+
+                  <div
+                  className="absolute w-1 bg-green-500 rounded-full transition-transform duration-150"
+                  style={{
+                      height: "95px",
+                      top: "50%",
+                      left: "50%",
+                      transformOrigin: "bottom center",
+                      transform: `translate(-50%, -100%) rotate(${selectedHour * 30}deg)`
+                  }}
+                  />
+
+                  <div className="absolute w-4 h-4 bg-green-500 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+
+
+              </div>
+
+              <div className="grid grid-cols-6 gap-2 mt-6 w-full">
+                  {minutes.map(min => (
+                  <button
+                      key={min}
+                      onClick={() => setSelectedMinute(min)}
+                      className={`px-4 py-2 text-sm rounded-lg font-semibold
+                      ${
+                      selectedMinute === min
+                          ? "bg-green-500 text-black"
+                          : "bg-[#1F2937] text-gray-400"
+                      }`}
+                  >
+                      {String(min).padStart(2, "0")}
+                  </button>
+                  ))}
+              </div>
+
+              <div className="flex gap-4 mt-4">
+                  {(["AM", "PM"] as const).map(p => (
+                  <button
+                      key={p}
+                      onClick={() => setPeriod(p)}
+                      className={`px-4 py-2 rounded-lg text-sm font-semibold
+                      ${
+                      period === p
+                          ? "bg-green-500 text-black"
+                          : "bg-[#1F2937] text-gray-400"
+                      }`}
+                  >
+                      {p}
+                  </button>
+                  ))}
+              </div>
+
+              </div>
+          </div>
+          )} */}
+
+
+
+          {/* CENTERED CLOCK OVERLAY */}
+          {isTimeOpen && (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60">
+
+              {/* TIME DISPLAY AS BUTTON */}
+              <button
+                onClick={() =>
+                  setClockMode(clockMode === "hour" ? "minute" : "hour")
+                }
+                className="absolute top-6 left-1/2 -translate-x-1/2 text-white font-semibold text-2xl"
+              >
+                {String(selectedHour).padStart(2, "0")} : {String(selectedMinute).padStart(2, "0")} {period}
+              </button>
+
+              <div className="relative flex flex-col items-center">
+
+                {/* CLOSE BUTTON */}
                 <button
-                    onClick={() => setIsTimeOpen(false)}
-                    className="absolute -top-10 text-gray-400 text-sm"
+                  onClick={() => setIsTimeOpen(false)}
+                  className="absolute -top-10 text-gray-400 text-sm"
                 >
-                    Close
+                  Close
                 </button>
 
-            {/* CLOCK CENTERED */}
-            <div
-                className="relative w-72 h-72 rounded-full bg-[#0f172a] border border-gray-700"
-                onPointerDown={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect()
-                const centerX = rect.left + rect.width / 2
-                const centerY = rect.top + rect.height / 2
-
-                const updateHour = (clientX: number, clientY: number) => {
-                    const dx = clientX - centerX
-                    const dy = clientY - centerY
-                    let angle = Math.atan2(dy, dx) * (180 / Math.PI)
-
-                    angle = angle + 90
-                    if (angle < 0) angle += 360
-
-                    const hour = Math.round(angle / 30) % 12 || 12
-                    setSelectedHour(hour)
-
-                    if (navigator.vibrate) navigator.vibrate(5)
-                }
-
-                updateHour(e.clientX, e.clientY)
-
-                const moveHandler = (moveEvent: PointerEvent) => {
-                    updateHour(moveEvent.clientX, moveEvent.clientY)
-                }
-
-                const upHandler = () => {
-                    window.removeEventListener("pointermove", moveHandler)
-                    window.removeEventListener("pointerup", upHandler)
-                }
-
-                window.addEventListener("pointermove", moveHandler)
-                window.addEventListener("pointerup", upHandler)
-                }}
-            >
-
-                {/* CLOCK NUMBERS */}
-                {hours.map((hour) => {
-                const angle = (hour % 12) * 30
-                const rad = (angle * Math.PI) / 180
-                const radius = 105
-
-                const x = radius * Math.sin(rad)
-                const y = -radius * Math.cos(rad)
-
-                return (
-                    <div
-                    key={hour}
-                    className={`absolute w-8 h-8 text-sm rounded-full flex items-center justify-center
-                    ${
-                        selectedHour === hour
-                        ? "text-green-400 font-semibold"
-                        : "text-gray-500"
-                    }`}
-                    style={{
-                        top: `calc(50% + ${y}px - 16px)`,
-                        left: `calc(50% + ${x}px - 16px)`
-                    }}
-                    >
-                    {hour}
-                    </div>
-                )
-                })}
-
-                {/* ROTATING HAND */}
+                {/* CLOCK */}
                 <div
-                className="absolute w-1 bg-green-500 rounded-full transition-transform duration-150"
-                style={{
-                    height: "95px",
-                    top: "50%",
-                    left: "50%",
-                    transformOrigin: "bottom center",
-                    transform: `translate(-50%, -100%) rotate(${selectedHour * 30}deg)`
-                }}
-                />
+                  ref={clockRef}
+                  className="relative w-70 h-70 rounded-full bg-[#0f172a] border border-gray-700 clock-container"
+                  onPointerDown={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect()
+                    const centerX = rect.left + rect.width / 2
+                    const centerY = rect.top + rect.height / 2
 
-                {/* CENTER DOT */}
-                <div className="absolute w-4 h-4 bg-green-500 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                    const updateClock = (clientX: number, clientY: number) => {
+                      const dx = clientX - centerX
+                      const dy = clientY - centerY
+                      let angle = Math.atan2(dy, dx) * (180 / Math.PI)
+                      angle += 90
+                      if (angle < 0) angle += 360
 
+                      if (clockMode === "hour") {
+                        const hour = Math.round(angle / 30) % 12 || 12
+                        setSelectedHour(hour)
+                        setClockMode("minute") // auto switch to minute
+                      } else {
+                        const minute = Math.round(angle / 6) % 60
+                        setSelectedMinute(minute)
+                      }
 
-            </div>
+                      if (navigator.vibrate) navigator.vibrate(5)
+                    }
 
-            {/* MINUTES BELOW */}
-            <div className="grid grid-cols-6 gap-2 mt-6 w-full">
-                {minutes.map(min => (
-                <button
-                    key={min}
-                    onClick={() => setSelectedMinute(min)}
-                    className={`px-4 py-2 text-sm rounded-lg font-semibold
-                    ${
-                    selectedMinute === min
-                        ? "bg-green-500 text-black"
-                        : "bg-[#1F2937] text-gray-400"
-                    }`}
+                    updateClock(e.clientX, e.clientY)
+
+                    const moveHandler = (moveEvent: PointerEvent) => {
+                      updateClock(moveEvent.clientX, moveEvent.clientY)
+                    }
+
+                    const upHandler = () => {
+                      window.removeEventListener("pointermove", moveHandler)
+                      window.removeEventListener("pointerup", upHandler)
+                    }
+
+                    window.addEventListener("pointermove", moveHandler)
+                    window.addEventListener("pointerup", upHandler)
+                  }}
                 >
-                    {String(min).padStart(2, "0")}
-                </button>
-                ))}
-            </div>
 
-            {/* AM / PM BELOW MINUTES */}
-            <div className="flex gap-4 mt-4">
-                {(["AM", "PM"] as const).map(p => (
-                <button
-                    key={p}
-                    onClick={() => setPeriod(p)}
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold
-                    ${
-                    period === p
-                        ? "bg-green-500 text-black"
-                        : "bg-[#1F2937] text-gray-400"
-                    }`}
-                >
-                    {p}
-                </button>
-                ))}
-            </div>
+                  {/* CLOCK NUMBERS */}
+                  {(clockMode === "hour" ? hours : minutes).map((val) => {
+                    const angle = clockMode === "hour" ? (val % 12) * 30 : val * 6
+                    const rad = (angle * Math.PI) / 180
+                    const radius = 105
+                    const x = radius * Math.sin(rad)
+                    const y = -radius * Math.cos(rad)
 
+                    const isSelected = clockMode === "hour" ? selectedHour === val : selectedMinute === val
+
+                    return (
+                      <div
+                        key={val}
+                        className={`absolute w-8 h-8 text-sm rounded-full flex items-center justify-center clock-number
+                          ${isSelected ? "text-green-400 font-semibold" : "text-gray-500"}`}
+                        style={{
+                          top: `calc(50% + ${y}px - 16px)`,
+                          left: `calc(50% + ${x}px - 16px)`
+                        }}
+                      >
+                        {clockMode === "minute" ? String(val).padStart(2, "0") : val}
+                      </div>
+                    )
+                  })}
+
+                  {/* ROTATING HAND */}
+                  <div
+                    className="absolute w-1 bg-green-500 rounded-full transition-transform duration-150"
+                    style={{
+                      height: "92px",
+                      top: "50%",
+                      left: "50%",
+                      transformOrigin: "bottom center",
+                      transform: `translate(-50%, -100%) rotate(${
+                        clockMode === "hour" ? selectedHour * 30 : selectedMinute * 6
+                      }deg)`
+                    }}
+                  />
+
+                  {/* CENTER DOT */}
+                  <div className="absolute w-4 h-4 bg-green-500 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+
+                </div>
+
+                {/* MINUTES GRID */}
+                <div className="grid grid-cols-6 gap-2 mt-6 w-full">
+                  {minutes.map(min => (
+                    <button
+                      key={min}
+                      onClick={() => {
+                        setSelectedMinute(min)
+                        setClockMode("minute")
+                      }}
+                      className={`px-4 py-2 text-sm rounded-lg font-semibold
+                        ${selectedMinute === min
+                          ? "bg-green-500 text-black"
+                          : "bg-[#1F2937] text-gray-400"
+                        }`}
+                    >
+                      {String(min).padStart(2, "0")}
+                    </button>
+                  ))}
+                </div>
+
+                {/* AM / PM */}
+                <div className="flex gap-4 mt-4">
+                  {(["AM", "PM"] as const).map(p => (
+                    <button
+                      key={p}
+                      onClick={() => setPeriod(p)}
+                      className={`px-4 py-2 rounded-lg text-sm font-semibold
+                        ${period === p
+                          ? "bg-green-500 text-black"
+                          : "bg-[#1F2937] text-gray-400"
+                        }`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+
+              </div>
             </div>
-        </div>
-        )}
+          )}
     </>
   )
 }

@@ -25,7 +25,7 @@ export default function ArchiveScreen({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 bg-[#0B0F1A] text-white flex flex-col"
+          className="fixed inset-0 z-60 bg-[#0B0F1A] text-white flex flex-col"
           initial={{ x: "100%" }}
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
@@ -65,8 +65,9 @@ export default function ArchiveScreen({
                 </div>
 
               </div>            ) : (
-              <div className="space-y-4">
+              <div className="flex flex-col gap-2">
                 {archivedHabits.map((habit) => {
+                  console.log("ARCHIVED HABIT CURRENT STATE:", habit)
                   
                   const IconComponent = IconsMapList[habit.icon as keyof typeof IconsMapList]
 
@@ -85,12 +86,12 @@ export default function ArchiveScreen({
                         </div>
 
                         <div>
-                          <p className="text-sm font-medium">
+                          <p className="text-sm font-medium capitalize">
                             {habit.name}
                           </p>
 
                           <p className="text-xs text-gray-400">
-                            {(habit.completions ?? []).length} completions
+                            {habit.completions?.length ?? 0} completions
                           </p>
                         </div>
                       </div>

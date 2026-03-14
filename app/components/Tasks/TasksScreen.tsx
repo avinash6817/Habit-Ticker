@@ -7,17 +7,15 @@ import { ClipboardList } from "lucide-react"
 
 import TaskHeader from "./TaskHeader"
 import TaskCreateModal from "./TaskCreateModal"
-import ScheduleTaskCard from "./ScheduleTaskCard"
+import TaskCard from "./TaskCard"
 import ConfirmActionModal from "../ConfirmActionModal"
 
 import { Task, TaskInput } from "@/app/types/task"
-// import { scheduleReminder } from "@/lib/reminders/scheduleReminder"
-// import { cancelReminder } from "@/lib/reminders/cancelReminder"
 import { playCompleteSound } from "@/lib/sound/playSound"
 
 import { createTaskAction, deleteTaskAction, toggleTaskCompletionAction } from "@/app/actions/task"
 
-export default function ScheduleScreen({tasks, setTasks, loading} : {
+export default function TasksScreen({tasks, setTasks, loading} : {
   tasks: Task[]
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>
   loading: boolean
@@ -48,7 +46,6 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
 
     setTasks(prev => [...prev, task])
 
-    // scheduleReminder(task)
   }
 
   const handleUpdateTask = (updatedTask: Task) => {
@@ -102,13 +99,11 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
     await toggleTaskCompletionAction(task.id)
   }
 
-  // ✅ Sort tasks by due date first (you already had this logic)
   const sortedTasks = [...tasks].sort(
     (a, b) =>
       new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
   )
 
-// ✅ Group tasks by day
   const groupedTasks = sortedTasks.reduce((acc: any, task) => {
     const dateKey = new Date(task.dueDate).toDateString()
 
@@ -199,7 +194,7 @@ export default function ScheduleScreen({tasks, setTasks, loading} : {
                       )}
 
                       <div className={index > 0 ? "ml-12 mt-4" : ""}>
-                        <ScheduleTaskCard
+                        <TaskCard
                           task={task}
                           onEdit={(task) => {
                             setEditingTask(task)
