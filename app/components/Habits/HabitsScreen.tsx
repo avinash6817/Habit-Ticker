@@ -16,6 +16,9 @@ import ConfirmActionModal from "../ConfirmActionModal"
 
 import { Habit } from "@/app/types/habit"
 
+import { useHabits } from "@/app/context/HabitContext"
+
+
 // Server Functions
 import {    updateHabitOrderAction, 
             deleteHabitAction, 
@@ -24,29 +27,13 @@ import {    updateHabitOrderAction,
 from "@/app/actions/habit"
 
 
-type HabitsScreenProps = {
-    habits: Habit[]
-    setHabits: React.Dispatch<React.SetStateAction<Habit[]>>
-    archivedHabits: Habit[]
-    setArchivedHabits: React.Dispatch<React.SetStateAction<Habit[]>>
-    selectedDate: string
-    setSelectedDate: (date: string) => void
-    loading: boolean
-}
-
-export default function HabitsScreen({
-    habits,
-    setHabits,
-    archivedHabits,
-    setArchivedHabits,
-    selectedDate,
-    setSelectedDate,
-    loading
-}: HabitsScreenProps) {
+export default function HabitsScreen(){
     const [open, setOpen] = useState(false)
     const [editingHabit, setEditingHabit] = useState<Habit | null>(null)
     const [deletingHabit, setDeletingHabit] = useState<Habit | null>(null)
     const [archivingHabit, setArchivingHabit] = useState<Habit | null>(null)
+
+    const { habits, setHabits, archivedHabits, setArchivedHabits, selectedDate, loading } = useHabits()
 
 
     const handleAddHabit = (habit: Habit) => {
@@ -159,11 +146,7 @@ export default function HabitsScreen({
 
             {/* Date Scroller */}
             <div className="fixed top-[70px] left-0 right-0 z-30 bg-[#0B0F1A] max-w-[1024px] mx-auto px-4">
-                <HabitDateScroller
-                    selectedDate={selectedDate}
-                    setSelectedDate={setSelectedDate}
-                    habits={habits}
-                />
+                <HabitDateScroller />
             </div>
 
 

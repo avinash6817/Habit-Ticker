@@ -340,7 +340,7 @@ export default function HabitCard({
             color: hex,
           }}
         >
-          Created on {habit.createdAt}
+          Started on {habit.createdAt}
         </span>
       </div>
 

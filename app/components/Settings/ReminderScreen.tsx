@@ -35,12 +35,8 @@ export default function RemindersScreen({
   }
 
   return (
-    <motion.div
-      className="fixed inset-0 z-60 bg-[#0B0F1A] text-white flex flex-col"
-      initial={{ x: "100%" }}
-      animate={{ x: 0 }}
-      exit={{ x: "100%" }}
-      transition={{ type: "spring", stiffness: 260, damping: 25 }}
+    <div
+      className="bg-[#0B0F1A] flex flex-col h-full"
     >
 
       {/* Header */}
@@ -103,6 +99,6 @@ export default function RemindersScreen({
 
       </div>
 
-    </motion.div>
+    </div>
   )
 }

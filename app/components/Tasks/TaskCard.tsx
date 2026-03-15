@@ -17,7 +17,6 @@ interface Props {
 export default function TaskCard({ task, onEdit, onToggleComplete, onDelete}: Props) {
   const cardRef = useRef<HTMLDivElement | null>(null)
 
-  // ✅ Long press state
   const [showActions, setShowActions] = useState(false)
   let pressTimer: any = null
 
@@ -121,7 +120,7 @@ export default function TaskCard({ task, onEdit, onToggleComplete, onDelete}: Pr
         onTouchStart={startPress}
         onTouchEnd={endPress}
         className={`
-          relative
+          relative select-none
           ml-18 flex-1 bg-[#1E293B] border border-gray-700
           rounded-full px-3 py-2
           transition-all duration-200

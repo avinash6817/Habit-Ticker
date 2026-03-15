@@ -1,11 +1,20 @@
+"use client";
+
 type Props = {
   onClick: () => void
 }
 
 export default function HabitCreateButton({ onClick }: Props) {
+  const handleClick = () => {
+    if (navigator.vibrate) {
+      navigator.vibrate([10, 20, 10])
+    }
+    onClick()
+  }
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       className="fixed 
                 bottom-6 
                 right-5 

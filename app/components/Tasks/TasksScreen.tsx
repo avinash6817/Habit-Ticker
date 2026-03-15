@@ -14,12 +14,10 @@ import { Task, TaskInput } from "@/app/types/task"
 import { playCompleteSound } from "@/lib/sound/playSound"
 
 import { createTaskAction, deleteTaskAction, toggleTaskCompletionAction } from "@/app/actions/task"
+import { useTasks } from "@/app/context/TaskContext"
 
-export default function TasksScreen({tasks, setTasks, loading} : {
-  tasks: Task[]
-  setTasks: React.Dispatch<React.SetStateAction<Task[]>>
-  loading: boolean
-}) {
+export default function TasksScreen() {
+  const { tasks, setTasks, tasksLoading} = useTasks()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -128,7 +126,7 @@ export default function TasksScreen({tasks, setTasks, loading} : {
         />
       </div>
 
-      {loading ? (
+      {tasksLoading ? (
           <div className="flex flex-col gap-5 px-4 pt-[170px] pb-20">
             {[...Array(6)].map((_, i) => (
               <div className="flex items-center gap-4 bg-[#1F2937] rounded-2xl p-4 animate-pulse"

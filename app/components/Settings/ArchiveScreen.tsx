@@ -20,12 +20,8 @@ export default function ArchiveScreen({ onClose }: { onClose: () => void }) {
     const [deletingArchivedHabit, setDeletingArchivedHabit] = useState<Habit | null>(null)
 
     return (
-          <motion.div
-            className="fixed inset-0 z-60 bg-[#0B0F1A] text-white flex flex-col"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 260, damping: 25 }}
+          <div
+            className="bg-[#0B0F1A] flex flex-col h-full"
           >
             {/* Header */}
             <div className="flex items-center gap-4 px-4 py-5 border-b border-white/10">
@@ -180,6 +176,6 @@ export default function ArchiveScreen({ onClose }: { onClose: () => void }) {
                 />
 
             </div>
-          </motion.div>
+          </div>
     )
 }

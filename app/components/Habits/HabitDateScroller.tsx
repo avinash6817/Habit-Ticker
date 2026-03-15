@@ -5,21 +5,13 @@
 import { useEffect, useRef } from "react"
 import { toLocalDateString } from "@/lib/date"
 
-import { Habit } from "@/app/types/habit"
+import { useHabits } from "@/app/context/HabitContext"
 
-interface HabitDateScrollerProps {
-  habits: Habit[]
-  selectedDate: string
-  setSelectedDate: (date: string) => void
-}
 
-export default function HabitDateScroller({
-  habits,
-  selectedDate,
-  setSelectedDate,
-}: HabitDateScrollerProps) {
+export default function HabitDateScroller() {
 
   const todayRef = useRef<HTMLDivElement>(null)
+  const { selectedDate, setSelectedDate, habits } = useHabits()
 
   useEffect(() => {
     if (todayRef.current) {
